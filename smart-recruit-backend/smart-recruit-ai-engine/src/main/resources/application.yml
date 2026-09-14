@@ -1,0 +1,93 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: smart-recruit-ai-engine
+  datasource:
+    url: jdbc:mysql://localhost:3306/smart_recruit_ai?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: SmartRecruitHikariPool
+      minimum-idle: 5
+      maximum-pool-size: 20
+      connection-timeout: 60000
+      idle-timeout: 300000
+      max-lifetime: 1800000
+      connection-test-query: SELECT 1
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.smartrecruit.aiengine.entity
+  global-config:
+    db-config:
+      id-type: assign_id
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    com.smartrecruit.aiengine: DEBUG
+    com.baomidou.mybatisplus: DEBUG
+
+ai-engine:
+  simulation:
+    enabled: true
+    latency-min-ms: 50
+    latency-max-ms: 500
+
+# 大模型 AI 配置
+ai:
+  llm:
+    enabled: true             # 默认关闭，启用时需配置有效 API Key
+    primary: qwen
+    providers:
+      qwen:
+        api-url: https://dashscope.aliyuncs.com/compatible-mode/v1
+        api-key: ${QWEN_API_KEY:sk-your-qwen-api-key}
+        model: qwen3-max
+        models:
+          - qwen3-max
+          - qwen-turbo
+          - qwen-plus
+          - qwen-vl-max
+          - qwen-vl-plus
+      deepseek:
+        api-url: https://api.deepseek.com/v1
+        api-key: ${DEEPSEEK_API_KEY:sk-your-deepseek-api-key}
+        model: deepseek-chat
+        models:
+          - deepseek-chat
+          - deepseek-reasoner
+          - deepseek-v4
+          - deepseek-v4-flash
+    # 按 Agent 的模型路由：调用方传入 Agent ID 时优先使用对应模型
+    routing:
+      orchestrator: deepseek-v4
+      resume-parser: qwen-vl-max
+      resume-parser-image: qwen-vl-max
+      smart-screener: qwen3-max
+      jd-generator: qwen3-max
+      interview-question: qwen3-max
+      interview-evaluator: deepseek-v4
+      referral-matcher: deepseek-chat
+      talent-recommender: deepseek-chat
+      offer-predictor: deepseek-v4-flash
+      retention-predictor: deepseek-v4-flash
+
+# AgentScope2 多智能体框架配置
+agentscope:
+  enabled: true              # 默认关闭，启用后使用 AgentScope2 HarnessAgent
+  workspace:
+    path: .agentscope/workspace
+  sub-agents:
+    interview-evaluator:
+      enabled: true          # 面试评估 Agent V2（HarnessAgent 版）
+    interview-orchestrator:
+      enabled: true           # 面试编排 Agent（子 Agent 编排）

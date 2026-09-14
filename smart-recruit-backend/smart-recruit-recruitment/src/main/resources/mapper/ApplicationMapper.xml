@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartrecruit.recruitment.repository.ApplicationMapper">
+
+    <resultMap id="BaseResultMap" type="com.smartrecruit.recruitment.entity.Application">
+        <id column="id" property="id"/>
+        <result column="candidate_id" property="candidateId"/>
+        <result column="job_position_id" property="jobId"/>
+        <result column="current_stage" property="stage"/>
+        <result column="match_score" property="aiMatchScore"/>
+        <result column="apply_time" property="applyAt"/>
+        <result column="create_time" property="createdAt"/>
+        <result column="deleted" property="deleted"/>
+        <result column="version" property="version"/>
+    </resultMap>
+
+    <select id="findByCandidateId" resultMap="BaseResultMap">
+        SELECT * FROM rec_application
+        WHERE candidate_id = #{candidateId} AND deleted = 0
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="findByJobId" resultMap="BaseResultMap">
+        SELECT * FROM rec_application
+        WHERE job_position_id = #{jobId} AND deleted = 0
+        ORDER BY create_time DESC
+    </select>
+
+    <update id="updateStage">
+        UPDATE rec_application
+        SET current_stage = #{stage}, update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,2243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>加入我们 - SmartRecruit | AI 驱动的智能招聘引领者</title>
+<meta name="description" content="SmartRecruit 2026 社会招聘 & 校园招聘，AI 时代的智能招聘平台，加入我们用技术改变千万人的职业未来。">
+<style>
+/* ================================================================
+   CSS Reset & Variables
+   ================================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --color-primary: #6366f1;
+  --color-primary-dark: #4f46e5;
+  --color-primary-light: #818cf8;
+  --color-primary-bg: rgba(99,102,241,0.06);
+  --color-accent: #f43f5e;
+  --color-accent-light: #fb7185;
+  --color-bg: #ffffff;
+  --color-bg-alt: #f8f9fb;
+  --color-bg-dark: #0f0d23;
+  --color-bg-card: #ffffff;
+  --color-text: #1a1a2e;
+  --color-text-secondary: #6b7280;
+  --color-text-muted: #9ca3af;
+  --color-border: #e5e7eb;
+  --color-border-light: #f3f4f6;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+  --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.08), 0 4px 10px -4px rgba(0,0,0,0.04);
+  --shadow-xl: 0 20px 50px -8px rgba(0,0,0,0.1);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+  --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+  --transition-slow: 0.35s cubic-bezier(0.4,0,0.2,1);
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+  --max-width: 1280px;
+}
+
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+ul { list-style: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+input, select { font-family: inherit; border: none; outline: none; }
+
+.container { max-width: var(--max-width); margin: 0 auto; padding: 0 32px; }
+
+/* ================================================================
+   Navigation
+   ================================================================ */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  transition: background var(--transition-slow), box-shadow var(--transition-slow), height var(--transition-slow);
+  background: rgba(255,255,255,0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid transparent;
+}
+
+.nav.scrolled {
+  background: rgba(255,255,255,0.92);
+  border-bottom-color: var(--color-border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-inner {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.3px;
+}
+
+.nav-logo-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-link {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-full);
+  transition: color var(--transition), background var(--transition);
+}
+
+.nav-link:hover { color: var(--color-text); background: var(--color-bg-alt); }
+.nav-link.active { color: var(--color-primary); background: var(--color-primary-bg); }
+
+.nav-cta {
+  margin-left: 16px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-primary), #8b5cf6);
+  border-radius: var(--radius-full);
+  transition: opacity var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+.nav-cta:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(99,102,241,0.4); }
+
+.nav-mobile-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.nav-mobile-toggle span {
+  width: 22px; height: 2px;
+  background: var(--color-text);
+  border-radius: 2px;
+  transition: var(--transition);
+}
+
+.nav-mobile-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(5px,5px); }
+.nav-mobile-toggle.active span:nth-child(2) { opacity: 0; }
+.nav-mobile-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(5px,-5px); }
+
+/* ================================================================
+   Hero Section
+   ================================================================ */
+.hero {
+  position: relative;
+  padding: 160px 0 120px;
+  background: linear-gradient(170deg, #0f0d23 0%, #1e1b4b 30%, #312e81 60%, #4338ca 100%);
+  overflow: hidden;
+  text-align: center;
+  color: #fff;
+}
+
+.hero-bg-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.hero-bg-glow.g1 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(99,102,241,0.5), transparent);
+  top: -200px; left: -100px;
+  animation: floatGlow 8s ease-in-out infinite;
+}
+
+.hero-bg-glow.g2 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(139,92,246,0.4), transparent);
+  bottom: -150px; right: -100px;
+  animation: floatGlow 10s ease-in-out infinite reverse;
+}
+
+.hero-bg-glow.g3 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(244,63,94,0.25), transparent);
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  animation: floatGlow 12s ease-in-out infinite;
+}
+
+@keyframes floatGlow {
+  0%, 100% { transform: translate(0,0); }
+  33% { transform: translate(30px,-30px); }
+  66% { transform: translate(-20px,20px); }
+}
+
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 40%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 40%, transparent 70%);
+}
+
+.hero-content { position: relative; z-index: 1; }
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: var(--radius-full);
+  margin-bottom: 32px;
+  backdrop-filter: blur(10px);
+}
+
+.hero-badge-dot {
+  width: 6px; height: 6px;
+  background: var(--color-success);
+  border-radius: 50%;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.hero-title {
+  font-size: clamp(40px, 5.5vw, 68px);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -1.5px;
+  margin-bottom: 24px;
+}
+
+.hero-title-gradient {
+  background: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #f472b6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-desc {
+  font-size: clamp(16px, 2vw, 19px);
+  color: rgba(255,255,255,0.6);
+  max-width: 640px;
+  margin: 0 auto 48px;
+  line-height: 1.7;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.hero-btn-primary {
+  padding: 14px 36px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-primary), #8b5cf6);
+  border-radius: var(--radius-full);
+  transition: all var(--transition);
+  box-shadow: 0 4px 24px rgba(99,102,241,0.45);
+}
+
+.hero-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(99,102,241,0.55); }
+
+.hero-btn-outline {
+  padding: 14px 36px;
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-radius: var(--radius-full);
+  transition: all var(--transition);
+}
+
+.hero-btn-outline:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); }
+
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 64px;
+  margin-top: 72px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-stat {
+  text-align: center;
+}
+
+.hero-stat-number {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #fff, rgba(255,255,255,0.7));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-stat-label {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 4px;
+}
+
+/* ================================================================
+   Section Common
+   ================================================================ */
+.section { padding: 100px 0; }
+.section-alt { background: var(--color-bg-alt); }
+.section-header { text-align: center; margin-bottom: 64px; }
+
+.section-label {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+  padding: 4px 14px;
+  background: var(--color-primary-bg);
+  border-radius: var(--radius-full);
+}
+
+.section-title {
+  font-size: clamp(28px, 3.5vw, 42px);
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.section-desc {
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+/* ================================================================
+   Culture / Why Join Us
+   ================================================================ */
+.culture-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.culture-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: 40px 32px;
+  transition: all var(--transition-slow);
+  position: relative;
+  overflow: hidden;
+}
+
+.culture-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary), #8b5cf6);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-slow);
+}
+
+.culture-card:hover { border-color: var(--color-border); box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+.culture-card:hover::before { transform: scaleX(1); }
+
+.culture-card-icon {
+  width: 52px; height: 52px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  font-size: 24px;
+}
+
+.culture-card-icon.purple { background: rgba(99,102,241,0.1); color: var(--color-primary); }
+.culture-card-icon.rose { background: rgba(244,63,94,0.1); color: var(--color-accent); }
+.culture-card-icon.amber { background: rgba(245,158,11,0.1); color: var(--color-warning); }
+.culture-card-icon.emerald { background: rgba(16,185,129,0.1); color: var(--color-success); }
+.culture-card-icon.cyan { background: rgba(6,182,212,0.1); color: #06b6d4; }
+.culture-card-icon.indigo { background: rgba(99,102,241,0.1); color: #6366f1; }
+
+.culture-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.2px; }
+.culture-card p { font-size: 14px; color: var(--color-text-secondary); line-height: 1.7; }
+
+/* ================================================================
+   Job Search & Listings
+   ================================================================ */
+.job-search-bar {
+  display: flex;
+  gap: 12px;
+  max-width: 720px;
+  margin: 0 auto 48px;
+  background: var(--color-bg-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 8px;
+  box-shadow: var(--shadow-md);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.job-search-bar:focus-within {
+  border-color: var(--color-primary-light);
+  box-shadow: 0 0 0 4px rgba(99,102,241,0.08);
+}
+
+.job-search-input {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 15px;
+  color: var(--color-text);
+  background: transparent;
+}
+
+.job-search-input::placeholder { color: var(--color-text-muted); }
+
+.job-search-btn {
+  padding: 12px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--color-primary);
+  border-radius: var(--radius-md);
+  transition: background var(--transition);
+  white-space: nowrap;
+}
+
+.job-search-btn:hover { background: var(--color-primary-dark); }
+
+.job-filters {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+
+.job-filter-chip {
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  transition: all var(--transition);
+}
+
+.job-filter-chip:hover { border-color: var(--color-primary-light); color: var(--color-primary); }
+.job-filter-chip.active { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+
+.job-list { display: flex; flex-direction: column; gap: 16px; }
+
+.job-card {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: 24px 32px;
+  transition: all var(--transition);
+  cursor: pointer;
+}
+
+.job-card:hover { border-color: var(--color-border); box-shadow: var(--shadow-lg); transform: translateX(4px); }
+
+.job-card-left { flex-shrink: 0; }
+.job-card-center { flex: 1; min-width: 0; }
+.job-card-right { flex-shrink: 0; text-align: right; }
+
+.job-card-avatar {
+  width: 52px; height: 52px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 20px;
+  color: #fff;
+}
+
+.job-card-avatar.tech { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+.job-card-avatar.product { background: linear-gradient(135deg, #f43f5e, #fb7185); }
+.job-card-avatar.design { background: linear-gradient(135deg, #06b6d4, #22d3ee); }
+.job-card-avatar.market { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+.job-card-avatar.data { background: linear-gradient(135deg, #10b981, #34d399); }
+
+.job-card-title {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  margin-bottom: 4px;
+}
+
+.job-card-meta {
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.job-card-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.job-card-tags {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.job-tag {
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: var(--radius-full);
+}
+
+.job-tag.hot { background: rgba(244,63,94,0.08); color: var(--color-accent); }
+.job-tag.new { background: rgba(16,185,129,0.08); color: var(--color-success); }
+.job-tag.urgent { background: rgba(245,158,11,0.08); color: var(--color-warning); }
+.job-tag.tech-tag { background: var(--color-primary-bg); color: var(--color-primary); }
+
+.job-card-date { font-size: 12px; color: var(--color-text-muted); margin-bottom: 8px; }
+
+.job-card-salary {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-accent);
+  letter-spacing: -0.3px;
+}
+
+.job-card-apply {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 7px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: all var(--transition);
+}
+
+.job-card-apply:hover { background: var(--color-primary); color: #fff; }
+
+.job-view-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.job-view-more-btn {
+  padding: 12px 32px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-full);
+  transition: all var(--transition);
+}
+
+.job-view-more-btn:hover { border-color: var(--color-primary); background: var(--color-primary-bg); }
+
+/* ================================================================
+   Benefits Section
+   ================================================================ */
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: var(--color-bg-card);
+}
+
+.benefit-item {
+  padding: 40px 28px;
+  text-align: center;
+  border-right: 1px solid var(--color-border-light);
+  border-bottom: 1px solid var(--color-border-light);
+  transition: background var(--transition);
+}
+
+.benefit-item:nth-child(4n) { border-right: none; }
+.benefit-item:nth-child(n+5) { border-bottom: none; }
+
+.benefit-item:hover { background: var(--color-bg-alt); }
+
+.benefit-icon {
+  width: 56px; height: 56px;
+  margin: 0 auto 20px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+}
+
+.benefit-icon.c1 { background: rgba(99,102,241,0.1); color: var(--color-primary); }
+.benefit-icon.c2 { background: rgba(244,63,94,0.1); color: var(--color-accent); }
+.benefit-icon.c3 { background: rgba(245,158,11,0.1); color: var(--color-warning); }
+.benefit-icon.c4 { background: rgba(16,185,129,0.1); color: var(--color-success); }
+.benefit-icon.c5 { background: rgba(6,182,212,0.1); color: #06b6d4; }
+.benefit-icon.c6 { background: rgba(139,92,246,0.1); color: #8b5cf6; }
+.benefit-icon.c7 { background: rgba(236,72,153,0.1); color: #ec4899; }
+.benefit-icon.c8 { background: rgba(14,165,233,0.1); color: #0ea5e9; }
+
+.benefit-item h4 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.benefit-item p { font-size: 13px; color: var(--color-text-muted); line-height: 1.6; }
+
+/* ================================================================
+   Life at Company / Gallery
+   ================================================================ */
+.gallery-scroll {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.gallery-scroll::-webkit-scrollbar { height: 4px; }
+.gallery-scroll::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
+.gallery-scroll::-webkit-scrollbar-track { background: transparent; }
+
+.gallery-card {
+  flex: 0 0 340px;
+  scroll-snap-align: start;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: 4/3;
+  cursor: pointer;
+  transition: transform var(--transition-slow);
+}
+
+.gallery-card:hover { transform: scale(1.02); }
+
+.gallery-card-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.gallery-card:hover .gallery-card-img { transform: scale(1.06); }
+
+.gallery-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 60%);
+  display: flex;
+  align-items: flex-end;
+  padding: 24px;
+}
+
+.gallery-card-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Gradient placeholder backgrounds instead of images */
+.gallery-placeholder {
+  width: 100%; height: 100%;
+}
+
+.gallery-placeholder.g1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.gallery-placeholder.g2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+.gallery-placeholder.g3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.gallery-placeholder.g4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+.gallery-placeholder.g5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+
+/* ================================================================
+   Testimonials / Employee Stories
+   ================================================================ */
+.testimonial-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.testimonial-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  transition: all var(--transition);
+}
+
+.testimonial-card:hover { box-shadow: var(--shadow-lg); }
+
+.testimonial-quote {
+  position: relative;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+  margin-bottom: 24px;
+  padding-left: 20px;
+  border-left: 3px solid var(--color-primary-light);
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.testimonial-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  color: #fff;
+}
+
+.testimonial-avatar.ta1 { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+.testimonial-avatar.ta2 { background: linear-gradient(135deg, #f43f5e, #fb7185); }
+.testimonial-avatar.ta3 { background: linear-gradient(135deg, #10b981, #34d399); }
+
+.testimonial-name { font-size: 15px; font-weight: 600; }
+.testimonial-role { font-size: 12px; color: var(--color-text-muted); }
+
+/* ================================================================
+   FAQ Section
+   ================================================================ */
+.faq-list {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color var(--transition);
+}
+
+.faq-item.active { border-color: var(--color-primary-light); }
+
+.faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+  text-align: left;
+  background: var(--color-bg-card);
+  transition: color var(--transition);
+}
+
+.faq-item.active .faq-question { color: var(--color-primary); }
+
+.faq-arrow {
+  width: 20px; height: 20px;
+  transition: transform var(--transition);
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.faq-item.active .faq-arrow { transform: rotate(180deg); color: var(--color-primary); }
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--transition-slow), padding var(--transition-slow);
+}
+
+.faq-item.active .faq-answer { max-height: 200px; }
+
+.faq-answer-inner {
+  padding: 0 24px 20px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+}
+
+/* ================================================================
+   CTA Section
+   ================================================================ */
+.cta {
+  position: relative;
+  padding: 100px 0;
+  background: linear-gradient(170deg, #0f0d23 0%, #1e1b4b 40%, #4338ca 100%);
+  overflow: hidden;
+  text-align: center;
+}
+
+.cta-glow {
+  position: absolute;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99,102,241,0.35), transparent);
+  filter: blur(100px);
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+}
+
+.cta-content { position: relative; z-index: 1; }
+
+.cta-title {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.8px;
+  margin-bottom: 16px;
+}
+
+.cta-desc {
+  font-size: 17px;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 36px;
+}
+
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 40px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: #fff;
+  border-radius: var(--radius-full);
+  transition: all var(--transition);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.cta-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+
+.cta-btn svg { transition: transform var(--transition); }
+.cta-btn:hover svg { transform: translateX(3px); }
+
+/* ================================================================
+   Footer
+   ================================================================ */
+.footer {
+  background: #0f0d23;
+  color: rgba(255,255,255,0.6);
+  padding: 72px 0 40px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 56px;
+}
+
+.footer-brand p {
+  font-size: 14px;
+  line-height: 1.7;
+  margin-top: 20px;
+  max-width: 300px;
+}
+
+.footer-brand-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.footer-col-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 24px;
+}
+
+.footer-col a {
+  display: block;
+  font-size: 14px;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 12px;
+  transition: color var(--transition);
+}
+
+.footer-col a:hover { color: rgba(255,255,255,0.8); }
+
+.footer-bottom {
+  padding-top: 28px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: rgba(255,255,255,0.3);
+}
+
+.footer-bottom-links { display: flex; gap: 24px; }
+.footer-bottom-links a { color: inherit; transition: color var(--transition); }
+.footer-bottom-links a:hover { color: rgba(255,255,255,0.6); }
+
+/* ================================================================
+   Animations
+   ================================================================ */
+.fade-up {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+
+.fade-up-d1 { transition-delay: 0.05s; }
+.fade-up-d2 { transition-delay: 0.1s; }
+.fade-up-d3 { transition-delay: 0.15s; }
+.fade-up-d4 { transition-delay: 0.2s; }
+.fade-up-d5 { transition-delay: 0.25s; }
+.fade-up-d6 { transition-delay: 0.3s; }
+
+/* ================================================================
+   Job Detail Modal
+   ================================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-slow);
+}
+
+.modal-overlay.open { opacity: 1; visibility: visible; }
+
+.modal {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-xl);
+  max-width: 640px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 40px;
+  position: relative;
+  box-shadow: var(--shadow-xl);
+  transform: translateY(20px);
+  transition: transform var(--transition-slow);
+}
+
+.modal-overlay.open .modal { transform: translateY(0); }
+
+.modal-close {
+  position: absolute;
+  top: 20px; right: 20px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--color-text-muted);
+  background: var(--color-bg-alt);
+  transition: all var(--transition);
+}
+
+.modal-close:hover { background: var(--color-border); color: var(--color-text); }
+
+.modal-company { font-size: 13px; color: var(--color-text-muted); margin-bottom: 8px; }
+.modal-title { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 20px; }
+
+.modal-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 20px;
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-md);
+  margin-bottom: 28px;
+}
+
+.modal-meta-item-label { font-size: 12px; color: var(--color-text-muted); margin-bottom: 4px; }
+.modal-meta-item-value { font-size: 15px; font-weight: 600; color: var(--color-text); }
+
+.modal-section { margin-bottom: 28px; }
+.modal-section h4 { font-size: 17px; font-weight: 700; margin-bottom: 12px; }
+.modal-section p, .modal-section li { font-size: 14px; color: var(--color-text-secondary); line-height: 1.8; }
+.modal-section ul { padding-left: 20px; list-style: disc; }
+.modal-section li { margin-bottom: 6px; }
+
+.modal-apply-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 16px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--color-primary), #8b5cf6);
+  border-radius: var(--radius-md);
+  margin-top: 32px;
+  transition: all var(--transition);
+}
+
+.modal-apply-btn:hover { opacity: 0.92; box-shadow: 0 8px 24px rgba(99,102,241,0.4); }
+
+/* ================================================================
+   Loading skeleton pulse
+   ================================================================ */
+@keyframes shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+
+/* ================================================================
+   Responsive
+   ================================================================ */
+@media (max-width: 1024px) {
+  .culture-grid { grid-template-columns: repeat(2, 1fr); }
+  .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+  .testimonial-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .hero-stats { gap: 40px; }
+}
+
+@media (max-width: 768px) {
+  .container, .nav-inner { padding: 0 20px; }
+
+  .nav-links { display: none; }
+  .nav-links.mobile-open {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 64px; left: 0; right: 0;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(20px);
+    padding: 24px;
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-lg);
+  }
+  .nav-cta { margin-left: 0; margin-top: 12px; width: 100%; text-align: center; }
+  .nav-mobile-toggle { display: flex; }
+
+  .hero { padding: 120px 0 80px; }
+  .hero-stats { gap: 24px; flex-wrap: wrap; }
+  .hero-stat-number { font-size: 28px; }
+
+  .section { padding: 64px 0; }
+  .culture-grid { grid-template-columns: 1fr; }
+  .benefits-grid { grid-template-columns: 1fr; }
+  .benefit-item { border-right: none; }
+  .benefit-item:nth-child(n+5) { border-bottom: 1px solid var(--color-border-light); }
+  .benefit-item:last-child { border-bottom: none; }
+
+  .testimonial-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+
+  .job-search-bar { flex-direction: column; padding: 12px; }
+  .job-card { flex-direction: column; align-items: flex-start; padding: 20px; }
+  .job-card-right { text-align: left; display: flex; gap: 16px; align-items: center; }
+  .modal { padding: 24px; }
+  .modal-meta-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .hero-title { font-size: 32px; }
+  .hero-actions { flex-direction: column; width: 100%; }
+  .hero-btn-primary, .hero-btn-outline { width: 100%; text-align: center; }
+  .job-filters { gap: 8px; }
+  .job-filter-chip { padding: 6px 14px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ================================================================
+     Navigation
+     ================================================================ -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M6 14V6l4 6 4-6v8" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      SmartRecruit
+    </a>
+
+    <div class="nav-links" id="navLinks">
+      <a href="#hero" class="nav-link active">首页</a>
+      <a href="#culture" class="nav-link">企业文化</a>
+      <a href="#jobs" class="nav-link">热招职位</a>
+      <a href="#benefits" class="nav-link">薪酬福利</a>
+      <a href="#life" class="nav-link">工作生活</a>
+      <a href="#faq" class="nav-link">常见问题</a>
+      <a href="#jobs" class="nav-cta">投递简历</a>
+    </div>
+
+    <button class="nav-mobile-toggle" id="mobileToggle" aria-label="菜单">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ================================================================
+     Hero
+     ================================================================ -->
+<section class="hero" id="hero">
+  <div class="hero-bg-glow g1"></div>
+  <div class="hero-bg-glow g2"></div>
+  <div class="hero-bg-glow g3"></div>
+  <div class="hero-grid"></div>
+
+  <div class="container hero-content">
+    <div class="hero-badge fade-up">
+      <span class="hero-badge-dot"></span>
+      2026 社会招聘 & 校园招聘同步开启
+    </div>
+
+    <h1 class="hero-title fade-up fade-up-d1">
+      加入 <span class="hero-title-gradient">SmartRecruit</span><br>用 AI 重塑招聘的未来
+    </h1>
+
+    <p class="hero-desc fade-up fade-up-d2">
+      我们正在寻找富有激情与创造力的伙伴，一起打造全球领先的智能招聘平台。
+      在这里，你写的每一行代码都在改变千万人的职业轨迹。
+    </p>
+
+    <div class="hero-actions fade-up fade-up-d3">
+      <a href="#jobs" class="hero-btn-primary">查看热招职位</a>
+      <a href="#culture" class="hero-btn-outline">了解 SmartRecruit</a>
+    </div>
+
+    <div class="hero-stats fade-up fade-up-d4">
+      <div class="hero-stat">
+        <div class="hero-stat-number" data-count="1200">0</div>
+        <div class="hero-stat-label">全球员工</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-number" data-count="18">0</div>
+        <div class="hero-stat-label">全球办公城市</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-number" data-count="500">0</div>
+        <div class="hero-stat-label">服务企业客户（万+）</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-number" data-count="96">0</div>
+        <div class="hero-stat-label">员工推荐率（%）</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     Culture / Why Join Us
+     ================================================================ -->
+<section class="section" id="culture">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">Why SmartRecruit</div>
+      <h2 class="section-title">在这里，成就更好的自己</h2>
+      <p class="section-desc">
+        我们相信优秀的人才值得最好的舞台。SmartRecruit 为你提供无尽的可能性与成长空间。
+      </p>
+    </div>
+
+    <div class="culture-grid">
+      <div class="culture-card fade-up fade-up-d1">
+        <div class="culture-card-icon purple">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+        </div>
+        <h3>技术驱动创新</h3>
+        <p>深度投入 AI / LLM 前沿技术领域，拥有自研大模型与多项核心专利。与顶尖工程师并肩作战，用技术定义行业标准。</p>
+      </div>
+
+      <div class="culture-card fade-up fade-up-d2">
+        <div class="culture-card-icon rose">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+          </svg>
+        </div>
+        <h3>高速成长通道</h3>
+        <p>双阶梯晋升体系（管理 + 专家），全年多次晋升窗口。新人专属 Mentor 带教，3 个月独当一面，1 年成为领域 Owner。</p>
+      </div>
+
+      <div class="culture-card fade-up fade-up-d3">
+        <div class="culture-card-icon amber">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+          </svg>
+        </div>
+        <h3>开放包容文化</h3>
+        <p>扁平化组织，坦诚清晰沟通。不设限的工位、弹性工作制、跨部门自由流动。每一个声音都被认真倾听。</p>
+      </div>
+
+      <div class="culture-card fade-up fade-up-d1">
+        <div class="culture-card-icon emerald">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20V10M18 20V4M6 20v-4"/>
+          </svg>
+        </div>
+        <h3>数据驱动决策</h3>
+        <p>A/B 实验文化深入骨髓，所有产品迭代基于真实数据。用科学方法做增长，让好想法用数据证明价值。</p>
+      </div>
+
+      <div class="culture-card fade-up fade-up-d2">
+        <div class="culture-card-icon cyan">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+        </div>
+        <h3>顶级工具与资源</h3>
+        <p>MacBook Pro + 4K 显示器标配，自研开发效能平台。GPT/Claude 等 AI 工具全员开放，用最好的工具做最好的产品。</p>
+      </div>
+
+      <div class="culture-card fade-up fade-up-d3">
+        <div class="culture-card-icon indigo">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path d="M9 12l2 2 4-4"/>
+          </svg>
+        </div>
+        <h3>创业精神永续</h3>
+        <p>保持 Day 1 心态，鼓励内部创业与孵化。成功的内部项目可获得独立融资与股权激励，做自己事业的创始人。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     Stats Counter Bar
+     ================================================================ -->
+<section class="section section-alt" style="padding: 56px 0;">
+  <div class="container">
+    <div style="display:flex;justify-content:center;align-items:center;gap:80px;flex-wrap:wrap;">
+      <div class="fade-up" style="text-align:center">
+        <div style="font-size:48px;font-weight:800;color:var(--color-primary);letter-spacing:-1px">50<span style="color:var(--color-primary-light)">亿+</span></div>
+        <div style="font-size:14px;color:var(--color-text-muted);margin-top:4px">累计处理的简历数</div>
+      </div>
+      <div class="fade-up fade-up-d1" style="text-align:center">
+        <div style="font-size:48px;font-weight:800;color:var(--color-primary);letter-spacing:-1px">99.99<span style="color:var(--color-primary-light)">%</span></div>
+        <div style="font-size:14px;color:var(--color-text-muted);margin-top:4px">系统可用性 SLA</div>
+      </div>
+      <div class="fade-up fade-up-d2" style="text-align:center">
+        <div style="font-size:48px;font-weight:800;color:var(--color-primary);letter-spacing:-1px">230<span style="color:var(--color-primary-light)">+</span></div>
+        <div style="font-size:14px;color:var(--color-text-muted);margin-top:4px">AI 核心专利</div>
+      </div>
+      <div class="fade-up fade-up-d3" style="text-align:center">
+        <div style="font-size:48px;font-weight:800;color:var(--color-primary);letter-spacing:-1px">50<span style="color:var(--color-primary-light)">亿</span></div>
+        <div style="font-size:14px;color:var(--color-text-muted);margin-top:4px">最新估值（美元）</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     Job Listings
+     ================================================================ -->
+<section class="section" id="jobs">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">Open Positions</div>
+      <h2 class="section-title">热招职位</h2>
+      <p class="section-desc">多个团队正在寻找优秀的你，投递简历开启你的 SmartRecruit 之旅。</p>
+    </div>
+
+    <!-- Search -->
+    <div class="job-search-bar fade-up fade-up-d1">
+      <input type="text" class="job-search-input" id="jobSearchInput" placeholder="搜索职位名称、关键词...">
+      <button class="job-search-btn" id="jobSearchBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px;margin-right:4px">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        搜索
+      </button>
+    </div>
+
+    <!-- Filters -->
+    <div class="job-filters fade-up fade-up-d2" id="jobFilters">
+      <button class="job-filter-chip active" data-filter="all">全部职位</button>
+      <button class="job-filter-chip" data-filter="tech">技术</button>
+      <button class="job-filter-chip" data-filter="product">产品 & 设计</button>
+      <button class="job-filter-chip" data-filter="market">市场 & 销售</button>
+      <button class="job-filter-chip" data-filter="data">数据 & AI</button>
+      <button class="job-filter-chip" data-filter="operation">运营 & 职能</button>
+    </div>
+
+    <!-- Job Cards -->
+    <div class="job-list" id="jobList"></div>
+
+    <div class="job-view-more fade-up">
+      <button class="job-view-more-btn" id="loadMoreBtn">加载更多职位</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     Employee Benefits
+     ================================================================ -->
+<section class="section section-alt" id="benefits">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">Compensation & Benefits</div>
+      <h2 class="section-title">极具竞争力的薪酬福利体系</h2>
+      <p class="section-desc">我们相信最好的回报匹配最好的你。从薪酬到成长，全面为你保驾护航。</p>
+    </div>
+
+    <div class="benefits-grid fade-up fade-up-d1">
+      <div class="benefit-item">
+        <div class="benefit-icon c1">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        </div>
+        <h4>具有竞争力的薪酬</h4>
+        <p>16 薪起 + 年度调薪 + 绩效奖金 + 期权激励，优秀者上不封顶</p>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon c2">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        </div>
+        <h4>全方位健康保障</h4>
+        <p>六险一金（含补充商业保险）+ 年度体检 + 免费健身房 + 心理咨询 EAP</p>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon c3">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+        </div>
+        <h4>弹性工作与假期</h4>
+        <p>弹性上下班 + 混合办公 + 12 天带薪年假 + 10 天带薪病假 + 生日假</p>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon c4">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <h4>成长学习基金</h4>
+        <p>年度 8,000 元学习基金 + 技术大会全报销 + 内部技术学院 + 读书报销</p>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon c5">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        </div>
+        <h4>股权激励计划</h4>
+        <p>核心岗位授予期权 / RSU，与公司共成长。目前已有多位早期员工实现财富自由</p>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon c6">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <h4>安居乐业支持</h4>
+        <p>安家补贴 + 租房补贴 + 首套房无息贷款。让你在大城市安心奋斗</p>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon c7">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <h4>专利与论文激励</h4>
+        <p>专利申请奖 10,000 元起 + 顶级会议论文奖励 + 公司全力支持技术品牌建设</p>
+      </div>
+      <div class="benefit-item">
+        <div class="benefit-icon c8">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        </div>
+        <h4>全球轮岗机会</h4>
+        <p>北京 / 上海 / 深圳 / 杭州 / 新加坡 / 硅谷，跨地域轮岗拓宽全球视野</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     Life at SmartRecruit
+     ================================================================ -->
+<section class="section" id="life">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">Life at SmartRecruit</div>
+      <h2 class="section-title">工作生活，同样精彩</h2>
+      <p class="section-desc">在这里，不仅有让人兴奋的技术挑战，还有温暖有趣的日常。</p>
+    </div>
+  </div>
+
+  <div class="gallery-scroll fade-up fade-up-d1" style="padding:0 32px">
+    <div class="gallery-card">
+      <div class="gallery-placeholder g1"></div>
+      <div class="gallery-card-overlay"><span class="gallery-card-label">黑客马拉松 2026</span></div>
+    </div>
+    <div class="gallery-card">
+      <div class="gallery-placeholder g2"></div>
+      <div class="gallery-card-overlay"><span class="gallery-card-label">团队 Offsite 团建</span></div>
+    </div>
+    <div class="gallery-card">
+      <div class="gallery-placeholder g3"></div>
+      <div class="gallery-card-overlay"><span class="gallery-card-label">开放式办公环境</span></div>
+    </div>
+    <div class="gallery-card">
+      <div class="gallery-placeholder g4"></div>
+      <div class="gallery-card-overlay"><span class="gallery-card-label">AI 技术分享会</span></div>
+    </div>
+    <div class="gallery-card">
+      <div class="gallery-placeholder g5"></div>
+      <div class="gallery-card-overlay"><span class="gallery-card-label">年会盛典</span></div>
+    </div>
+    <div class="gallery-card">
+      <div class="gallery-placeholder g1"></div>
+      <div class="gallery-card-overlay"><span class="gallery-card-label">新员工训练营</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     Employee Testimonials
+     ================================================================ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">Our People</div>
+      <h2 class="section-title">听听 SmartRecruiters 怎么说</h2>
+    </div>
+
+    <div class="testimonial-grid">
+      <div class="testimonial-card fade-up">
+        <div class="testimonial-quote">
+          "加入 SmartRecruit 三年，从应届生成长为 AI 算法负责人。公司对新人的信任度和授权度远超我想象，入职第二个月就主导了核心推荐算法重构。"
+        </div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar ta1">M</div>
+          <div>
+            <div class="testimonial-name">张明远</div>
+            <div class="testimonial-role">AI 算法专家 · 2023 年加入</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card fade-up fade-up-d1">
+        <div class="testimonial-quote">
+          "作为两个孩子的妈妈，SmartRecruit 的弹性工作制和母婴室配套让我可以兼顾事业与家庭。这里的多元包容不是口号，而是渗透在每个细节里。"
+        </div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar ta2">L</div>
+          <div>
+            <div class="testimonial-name">林晓萌</div>
+            <div class="testimonial-role">产品总监 · 2022 年加入</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card fade-up fade-up-d2">
+        <div class="testimonial-quote">
+          "在上一家公司做了五年螺丝钉，来 SmartRecruit 后第一次感受到什么叫 Ownership。你不仅写代码，更能参与产品决策、客户拜访，视野一下子就打开了。"
+        </div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar ta3">C</div>
+          <div>
+            <div class="testimonial-name">陈浩然</div>
+            <div class="testimonial-role">高级后端工程师 · 2024 年加入</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     FAQ
+     ================================================================ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-label">FAQ</div>
+      <h2 class="section-title">常见问题</h2>
+    </div>
+
+    <div class="faq-list">
+      <div class="faq-item fade-up">
+        <button class="faq-question">
+          招聘流程是怎样的？
+          <svg class="faq-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">
+          简历投递 → 简历筛选（1-3 个工作日）→ 技术面试（2-3 轮）→ HR 面试 → Offer 发放。整体流程通常在 2 周内完成。部分岗位会包含线上测评或代码挑战环节。
+        </div></div>
+      </div>
+
+      <div class="faq-item fade-up fade-up-d1">
+        <button class="faq-question">
+          是否支持远程办公？
+          <svg class="faq-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">
+          采用混合办公模式，每周可选择 2 天远程办公。核心协作日（周二至周四）建议到岗，以保证团队高效协作。也提供每年 4 周的「全球随地办公」政策。
+        </div></div>
+      </div>
+
+      <div class="faq-item fade-up fade-up-d2">
+        <button class="faq-question">
+          技术面试主要考察什么？
+          <svg class="faq-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">
+          不考八股文。我们更关注：计算机基础（数据结构/算法）、工程能力（代码设计/系统设计）、学习能力和技术热情。面试官会基于你的项目经验深入探讨，而不是机械刷题。
+        </div></div>
+      </div>
+
+      <div class="faq-item fade-up fade-up-d3">
+        <button class="faq-question">
+          应届生有培训体系吗？
+          <svg class="faq-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">
+          有完整的「星火计划」培养体系：入职前线上 Bootcamp → 2 周封闭式训练营 → 1 对 1 Mentor 带教（持续 6 个月）→ 新人 Review 答辩。确保每位毕业生顺利从校园过渡到职场。
+        </div></div>
+      </div>
+
+      <div class="faq-item fade-up fade-up-d4">
+        <button class="faq-question">
+          可以同时投递多个岗位吗？
+          <svg class="faq-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-answer"><div class="faq-answer-inner">
+          可以，每位候选人最多同时投递 3 个岗位。我们建议选择最匹配你技能和兴趣的岗位，提高成功率。如果某个流程终止，可以释放名额继续投递其他岗位。
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     CTA
+     ================================================================ -->
+<section class="cta">
+  <div class="cta-glow"></div>
+  <div class="container cta-content">
+    <h2 class="cta-title">准备好开启新的职业篇章了吗？</h2>
+    <p class="cta-desc">加入 SmartRecruit，与 1200+ 优秀伙伴一起，用 AI 改变招聘行业。</p>
+    <a href="#jobs" class="cta-btn">
+      查看热招职位
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- ================================================================
+     Footer
+     ================================================================ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-brand-name">
+          <div class="nav-logo-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M6 14V6l4 6 4-6v8" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          SmartRecruit
+        </div>
+        <p>AI 驱动的智能招聘平台，致力于用技术让招聘更精准、更高效、更人性化。服务超过 500 万家企业客户，累计处理 50 亿+ 简历。</p>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">职位类别</div>
+        <a href="#jobs">技术研发</a>
+        <a href="#jobs">产品与设计</a>
+        <a href="#jobs">数据与 AI</a>
+        <a href="#jobs">市场与销售</a>
+        <a href="#jobs">运营与职能</a>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">关于我们</div>
+        <a href="#culture">企业文化</a>
+        <a href="#benefits">薪酬福利</a>
+        <a href="#life">工作生活</a>
+        <a href="#faq">常见问题</a>
+        <a href="#">联系我们</a>
+      </div>
+
+      <div class="footer-col">
+        <div class="footer-col-title">联系我们</div>
+        <a href="mailto:hr@smartrecruit.com">hr@smartrecruit.com</a>
+        <a href="#">北京 · 海淀区中关村科技园</a>
+        <a href="#">上海 · 浦东新区张江高科技园</a>
+        <a href="#">深圳 · 南山区科技园</a>
+        <a href="#">杭州 · 余杭区未来科技城</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>&copy; 2026 SmartRecruit. 保留所有权利。</span>
+      <div class="footer-bottom-links">
+        <a href="#">隐私政策</a>
+        <a href="#">用户协议</a>
+        <a href="#">Cookie 政策</a>
+        <a href="#">粤ICP备XXXXXXXX号</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ================================================================
+     Job Detail Modal
+     ================================================================ -->
+<div class="modal-overlay" id="jobModal">
+  <div class="modal">
+    <button class="modal-close" id="modalClose">&times;</button>
+    <div class="modal-company" id="modalDept"></div>
+    <h3 class="modal-title" id="modalTitle"></h3>
+
+    <div class="modal-meta-grid">
+      <div>
+        <div class="modal-meta-item-label">工作地点</div>
+        <div class="modal-meta-item-value" id="modalLocation"></div>
+      </div>
+      <div>
+        <div class="modal-meta-item-label">经验要求</div>
+        <div class="modal-meta-item-value" id="modalExp"></div>
+      </div>
+      <div>
+        <div class="modal-meta-item-label">薪资范围</div>
+        <div class="modal-meta-item-value" id="modalSalary"></div>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <h4>岗位职责</h4>
+      <ul id="modalResponsibilities"></ul>
+    </div>
+
+    <div class="modal-section">
+      <h4>任职要求</h4>
+      <ul id="modalRequirements"></ul>
+    </div>
+
+    <div class="modal-section">
+      <h4>加分项</h4>
+      <ul id="modalBonus"></ul>
+    </div>
+
+    <button class="modal-apply-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      立即投递简历
+    </button>
+  </div>
+</div>
+
+<!-- ================================================================
+     JavaScript
+     ================================================================ -->
+<script>
+(function() {
+  'use strict';
+
+  // ================================================================
+  // Job Data
+  // ================================================================
+  const allJobs = [
+    {
+      id: 1, title: '资深后端开发工程师（Java）', dept: '技术研发部 · 核心平台组',
+      location: '北京', exp: '5-10年', salary: '40-70K·16薪',
+      avatarClass: 'tech', avatarLetter: 'J',
+      tags: [{text:'热招',cls:'hot'},{text:'Java',cls:'tech-tag'},{text:'Spring Boot',cls:'tech-tag'}],
+      category: 'tech', date: '2026-07-28',
+      responsibilities: [
+        '负责 SmartRecruit 核心招聘引擎的后端架构设计与开发',
+        '参与大规模分布式系统的性能优化与稳定性治理',
+        '主导技术方案评审，推动技术债务清理与系统重构',
+        '指导初中级工程师，建立代码规范与最佳实践',
+      ],
+      requirements: [
+        '5 年以上 Java 开发经验，扎实的计算机基础',
+        '精通 Spring Boot / Spring Cloud 微服务架构',
+        '熟悉 MySQL、Redis、Elasticsearch、Kafka 等中间件',
+        '有大规模分布式系统设计与调优经验',
+      ],
+      bonus: [
+        '有 SaaS / 企业服务领域经验优先',
+        '有开源项目贡献或技术博客者优先',
+        '熟悉 AI / LLM 应用开发者优先',
+      ]
+    },
+    {
+      id: 2, title: 'AI 算法工程师（NLP/CV）', dept: 'AI 研究院 · 算法团队',
+      location: '北京 / 上海', exp: '3-8年', salary: '50-90K·16薪',
+      avatarClass: 'data', avatarLetter: 'A',
+      tags: [{text:'热招',cls:'hot'},{text:'NLP',cls:'tech-tag'},{text:'LLM',cls:'tech-tag'}],
+      category: 'data', date: '2026-07-26',
+      responsibilities: [
+        '研发简历解析、人岗匹配、智能推荐等核心 AI 算法',
+        '跟踪前沿大语言模型技术，探索 LLM 在招聘场景的深度应用',
+        '设计并实现大规模 NLP/CV 模型训练与推理系统',
+        '参与 AI 相关专利撰写与顶级会议论文投稿',
+      ],
+      requirements: [
+        '硕士及以上学历，计算机/AI/数学等相关专业',
+        '精通 Python，熟悉 PyTorch / TensorFlow 框架',
+        '在 NLP/CV/推荐系统任一方向有深入研究与落地经验',
+        '有 LLM 微调、RAG、Agent 等项目经验优先',
+      ],
+      bonus: [
+        '有 ACL/EMNLP/CVPR/NeurIPS 等顶会论文发表经历',
+        '有大规模分布式训练经验',
+        '熟悉 CUDA 编程与模型推理优化',
+      ]
+    },
+    {
+      id: 3, title: '高级前端开发工程师（React/Vue）', dept: '技术研发部 · 前端团队',
+      location: '上海', exp: '3-7年', salary: '35-60K·16薪',
+      avatarClass: 'tech', avatarLetter: 'F',
+      tags: [{text:'React',cls:'tech-tag'},{text:'Vue',cls:'tech-tag'},{text:'TypeScript',cls:'tech-tag'}],
+      category: 'tech', date: '2026-07-25',
+      responsibilities: [
+        '负责 SmartRecruit SaaS 平台前端架构设计与核心模块开发',
+        '建设前端工程化体系（构建/测试/部署/监控）',
+        '推动前端性能优化与用户体验提升',
+        '参与组件库与低代码平台建设',
+      ],
+      requirements: [
+        '3 年以上前端开发经验，精通 React 或 Vue 框架',
+        '扎实的 JavaScript/TypeScript/CSS 基础',
+        '熟悉前端工程化（Webpack/Vite/Monorepo）',
+        '有大型前端项目架构经验',
+      ],
+      bonus: [
+        '有微前端架构落地经验',
+        '有 Node.js BFF 层开发经验',
+        '有可视化/低代码平台经验优先',
+      ]
+    },
+    {
+      id: 4, title: '高级产品经理（SaaS 方向）', dept: '产品部 · 招聘产品线',
+      location: '北京', exp: '5-8年', salary: '35-55K·16薪',
+      avatarClass: 'product', avatarLetter: 'P',
+      tags: [{text:'B端',cls:'tech-tag'},{text:'SaaS',cls:'tech-tag'}],
+      category: 'product', date: '2026-07-24',
+      responsibilities: [
+        '负责 SmartRecruit 招聘 SaaS 产品的规划与迭代',
+        '深入理解企业招聘业务流程，抽象通用化产品方案',
+        '通过数据分析与客户访谈驱动产品决策',
+        '协调设计、研发、测试团队，推动产品高质量交付',
+      ],
+      requirements: [
+        '5 年以上产品经理经验，有 B 端 SaaS 产品背景',
+        '出色的逻辑思维与抽象能力，善于从复杂场景中提炼产品方案',
+        '具备良好的数据分析能力，熟练使用 SQL',
+        '有招聘/HR Tech 领域经验优先',
+      ],
+      bonus: [
+        '有从 0 到 1 的产品孵化经验',
+        '有 AI 产品的设计与落地经验',
+        '有国际化产品经验优先',
+      ]
+    },
+    {
+      id: 5, title: '资深 UI/UX 设计师', dept: '设计部 · 体验设计团队',
+      location: '北京 / 深圳', exp: '3-6年', salary: '30-50K·16薪',
+      avatarClass: 'design', avatarLetter: 'D',
+      tags: [{text:'B端设计',cls:'tech-tag'},{text:'UX',cls:'tech-tag'}],
+      category: 'product', date: '2026-07-22',
+      responsibilities: [
+        '负责 SmartRecruit 产品的 UI/UX 设计，打造极致用户体验',
+        '建立并维护设计系统与组件库，确保产品体验一致性',
+        '通过用户研究、可用性测试驱动设计迭代',
+        '与产品、研发紧密协作，推动设计方案高质量落地',
+      ],
+      requirements: [
+        '3 年以上 UI/UX 设计经验，有成熟的设计作品集',
+        '精通 Figma 等设计工具，熟悉设计系统搭建',
+        '有 B 端 / SaaS 产品设计经验，理解企业用户场景',
+        '良好的设计表达能力与数据驱动的设计思维',
+      ],
+      bonus: [
+        '有 AI 产品的设计经验',
+        '有动效设计与前端实现能力',
+        '有用户研究 / 用研方法论经验',
+      ]
+    },
+    {
+      id: 6, title: '大客户销售经理（HR Tech）', dept: '销售部 · 大客户团队',
+      location: '北京 / 上海 / 深圳 / 杭州', exp: '5-10年', salary: '25-45K·16薪 + 提成',
+      avatarClass: 'market', avatarLetter: 'S',
+      tags: [{text:'热招',cls:'hot'},{text:'大客户',cls:'tech-tag'}],
+      category: 'market', date: '2026-07-20',
+      responsibilities: [
+        '负责 SmartRecruit 产品在大中型企业的销售与推广',
+        '深入挖掘客户招聘痛点，制定针对性解决方案',
+        '维护并深化核心客户关系，推动续约与增购',
+        '收集市场与竞品信息，为产品迭代提供市场洞察',
+      ],
+      requirements: [
+        '5 年以上 B2B 软件销售经验，有 SaaS/HR Tech 销售背景优先',
+        '出色的商务谈判能力与解决方案式销售能力',
+        '有 500 强企业或大型国企的客户资源与成功案例',
+        '良好的抗压能力与自我驱动力',
+      ],
+      bonus: [
+        '有 HR SaaS 产品成功销售经验',
+        '管理过百万级 ARR 客户群',
+        '985/211 本科及以上学历优先',
+      ]
+    },
+    {
+      id: 7, title: '数据平台开发工程师', dept: '数据与 AI 平台部',
+      location: '杭州', exp: '3-7年', salary: '35-60K·16薪',
+      avatarClass: 'data', avatarLetter: 'D',
+      tags: [{text:'大数据',cls:'tech-tag'},{text:'Flink',cls:'tech-tag'},{text:'Spark',cls:'tech-tag'}],
+      category: 'data', date: '2026-07-18',
+      responsibilities: [
+        '设计并开发 SmartRecruit 一站式数据平台',
+        '构建实时/离线数据计算链路，支撑业务决策与 AI 训练',
+        '负责数据质量治理与数据资产管理',
+        '推动数据产品化，赋能业务团队自助取数与分析',
+      ],
+      requirements: [
+        '3 年以上大数据开发经验，精通 Java/Scala/Python',
+        '熟悉 Hadoop/Spark/Flink/Hive 等大数据技术栈',
+        '有数据仓库建模与 ETL 开发经验',
+        '有实时流计算（Flink/Kafka Streams）项目经验',
+      ],
+      bonus: [
+        '有数据湖（Iceberg/Hudi）方案落地经验',
+        '有数据平台产品建设经验',
+        '熟悉 ClickHouse/Doris 等 OLAP 引擎',
+      ]
+    },
+    {
+      id: 8, title: '安全合规工程师', dept: '基础架构部 · 安全团队',
+      location: '北京', exp: '5-8年', salary: '40-65K·16薪',
+      avatarClass: 'tech', avatarLetter: 'S',
+      tags: [{text:'安全',cls:'tech-tag'},{text:'合规',cls:'tech-tag'}],
+      category: 'tech', date: '2026-07-16',
+      responsibilities: [
+        '负责公司信息安全体系建设和持续改进',
+        '主导 SOC2/ISO27001/等保三级等合规认证',
+        '带领安全渗透测试与安全左移建设',
+        '建立数据安全与隐私保护体系',
+      ],
+      requirements: [
+        '5 年以上信息安全工作经验',
+        '熟悉主流安全攻防技术，有渗透测试实战经验',
+        '了解 SOC2/ISO27001/等保/GDPR 等合规标准',
+        '有安全自动化与 DevSecOps 实践经验',
+      ],
+      bonus: [
+        '持有 CISSP/CISP/CISA 等安全认证',
+        '有知名互联网公司安全团队经验',
+        '有数据安全/隐私计算相关经验',
+      ]
+    },
+    {
+      id: 9, title: '校园招聘 HR', dept: '人力资源部 · 招聘团队',
+      location: '北京', exp: '2-5年', salary: '18-30K·16薪',
+      avatarClass: 'market', avatarLetter: 'H',
+      tags: [{text:'校招',cls:'new'},{text:'雇主品牌',cls:'tech-tag'}],
+      category: 'operation', date: '2026-07-15',
+      responsibilities: [
+        '统筹 SmartRecruit 年度校园招聘项目',
+        '策划并执行高校宣讲会、Open Day、线上直播等活动',
+        '维护与目标高校就业办的合作关系',
+        '建设并提升 SmartRecruit 雇主品牌影响力',
+      ],
+      requirements: [
+        '2 年以上校园招聘或雇主品牌相关经验',
+        '出色的活动策划与项目管理能力',
+        '优秀的沟通表达与演讲能力',
+        '能适应校招季高频出差',
+      ],
+      bonus: [
+        '有互联网大厂校招经验优先',
+        '有新媒体运营与内容创作能力',
+        '985/211 本科及以上学历优先',
+      ]
+    },
+  ];
+
+  // ================================================================
+  // Render Jobs
+  // ================================================================
+  let currentFilter = 'all';
+  let displayedCount = 6;
+  const ITEMS_PER_PAGE = 6;
+
+  const jobListEl = document.getElementById('jobList');
+  const searchInput = document.getElementById('jobSearchInput');
+  const searchBtn = document.getElementById('jobSearchBtn');
+  const filterContainer = document.getElementById('jobFilters');
+  const loadMoreBtn = document.getElementById('loadMoreBtn');
+
+  function getFilteredJobs() {
+    let jobs = allJobs;
+    if (currentFilter !== 'all') {
+      jobs = jobs.filter(j => j.category === currentFilter);
+    }
+    const keyword = searchInput.value.trim().toLowerCase();
+    if (keyword) {
+      jobs = jobs.filter(j =>
+        j.title.toLowerCase().includes(keyword) ||
+        j.dept.toLowerCase().includes(keyword) ||
+        j.tags.some(t => t.text.toLowerCase().includes(keyword))
+      );
+    }
+    return jobs;
+  }
+
+  function renderJobCard(job) {
+    const tagsHtml = job.tags.map(t =>
+      `<span class="job-tag ${t.cls}">${t.text}</span>`
+    ).join('');
+
+    return `
+      <div class="job-card fade-up" data-job-id="${job.id}">
+        <div class="job-card-left">
+          <div class="job-card-avatar ${job.avatarClass}">${job.avatarLetter}</div>
+        </div>
+        <div class="job-card-center">
+          <div class="job-card-title">${escapeHtml(job.title)}</div>
+          <div class="job-card-meta">
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              ${escapeHtml(job.location)}
+            </span>
+            <span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+              ${escapeHtml(job.exp)}
+            </span>
+            <span>${escapeHtml(job.dept)}</span>
+          </div>
+          <div class="job-card-tags">${tagsHtml}</div>
+        </div>
+        <div class="job-card-right">
+          <div class="job-card-date">${escapeHtml(job.date)} 发布</div>
+          <div class="job-card-salary">${escapeHtml(job.salary)}</div>
+          <span class="job-card-apply">查看详情</span>
+        </div>
+      </div>
+    `;
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderJobs() {
+    const filtered = getFilteredJobs();
+    const visible = filtered.slice(0, displayedCount);
+    jobListEl.innerHTML = visible.map(renderJobCard).join('');
+
+    // Show/hide load more button
+    loadMoreBtn.style.display = filtered.length > displayedCount ? '' : 'none';
+
+    // Re-attach click handlers and re-trigger scroll animations
+    attachJobCardListeners();
+    observeFadeElements();
+  }
+
+  function attachJobCardListeners() {
+    jobListEl.querySelectorAll('.job-card').forEach(card => {
+      card.addEventListener('click', function() {
+        const id = parseInt(this.dataset.jobId);
+        const job = allJobs.find(j => j.id === id);
+        if (job) openJobModal(job);
+      });
+    });
+  }
+
+  // ================================================================
+  // Job Modal
+  // ================================================================
+  const modal = document.getElementById('jobModal');
+  const modalClose = document.getElementById('modalClose');
+
+  function openJobModal(job) {
+    document.getElementById('modalDept').textContent = job.dept;
+    document.getElementById('modalTitle').textContent = job.title;
+    document.getElementById('modalLocation').textContent = job.location;
+    document.getElementById('modalExp').textContent = job.exp;
+    document.getElementById('modalSalary').textContent = job.salary;
+    document.getElementById('modalResponsibilities').innerHTML = job.responsibilities.map(s => `<li>${s}</li>`).join('');
+    document.getElementById('modalRequirements').innerHTML = job.requirements.map(s => `<li>${s}</li>`).join('');
+    document.getElementById('modalBonus').innerHTML = job.bonus.map(s => `<li>${s}</li>`).join('');
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  modalClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) closeModal();
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+  });
+
+  // ================================================================
+  // Search & Filter
+  // ================================================================
+  searchBtn.addEventListener('click', function() {
+    displayedCount = ITEMS_PER_PAGE;
+    renderJobs();
+    document.getElementById('jobs').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  searchInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      displayedCount = ITEMS_PER_PAGE;
+      renderJobs();
+      document.getElementById('jobs').scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+
+  filterContainer.addEventListener('click', function(e) {
+    const chip = e.target.closest('.job-filter-chip');
+    if (!chip) return;
+    filterContainer.querySelectorAll('.job-filter-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    currentFilter = chip.dataset.filter;
+    displayedCount = ITEMS_PER_PAGE;
+    renderJobs();
+  });
+
+  loadMoreBtn.addEventListener('click', function() {
+    displayedCount += ITEMS_PER_PAGE;
+    renderJobs();
+  });
+
+  // ================================================================
+  // FAQ Accordion
+  // ================================================================
+  // Updated FAQ HTML — fixing the duplicate button in third FAQ item already handled in HTML
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const item = this.parentElement;
+      const wasActive = item.classList.contains('active');
+      // Close all
+      document.querySelectorAll('.faq-item.active').forEach(el => el.classList.remove('active'));
+      // Open clicked (if wasn't active)
+      if (!wasActive) item.classList.add('active');
+    });
+  });
+
+  // ================================================================
+  // Mobile Menu
+  // ================================================================
+  const mobileToggle = document.getElementById('mobileToggle');
+  const navLinks = document.getElementById('navLinks');
+
+  mobileToggle.addEventListener('click', function() {
+    this.classList.toggle('active');
+    navLinks.classList.toggle('mobile-open');
+  });
+
+  // Close mobile nav on link click
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', function() {
+      mobileToggle.classList.remove('active');
+      navLinks.classList.remove('mobile-open');
+    });
+  });
+
+  // ================================================================
+  // Nav Scroll Effect
+  // ================================================================
+  const nav = document.getElementById('nav');
+
+  function updateNav() {
+    const scrolled = window.scrollY > 20;
+    nav.classList.toggle('scrolled', scrolled);
+  }
+
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav(); // Init
+
+  // ================================================================
+  // Nav Active Link Update on Scroll
+  // ================================================================
+  const navLinkItems = navLinks.querySelectorAll('a.nav-link');
+  const sectionIds = Array.from(navLinkItems).map(a => a.getAttribute('href').replace('#',''));
+
+  function updateActiveNavLink() {
+    let currentSection = '';
+    for (const id of sectionIds) {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top <= 200) {
+        currentSection = id;
+      }
+    }
+    navLinkItems.forEach(a => {
+      const href = a.getAttribute('href').replace('#','');
+      a.classList.toggle('active', href === currentSection);
+    });
+  }
+
+  window.addEventListener('scroll', updateActiveNavLink, { passive: true });
+
+  // ================================================================
+  // Counter Animation
+  // ================================================================
+  function animateCounters() {
+    document.querySelectorAll('.hero-stat-number[data-count]').forEach(el => {
+      if (el.dataset.animated) return;
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight - 50) {
+        el.dataset.animated = '1';
+        const target = parseInt(el.dataset.count);
+        const suffix = el.textContent.includes('+') ? '+' : el.textContent.includes('%') ? '%' : '';
+        const duration = 2000;
+        const startTime = performance.now();
+
+        function update(now) {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          // Ease out cubic
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = Math.floor(eased * target);
+          el.textContent = current + suffix;
+          if (progress < 1) {
+            requestAnimationFrame(update);
+          } else {
+            el.textContent = target + suffix;
+          }
+        }
+        requestAnimationFrame(update);
+      }
+    });
+  }
+
+  // ================================================================
+  // Fade Up Scroll Animation
+  // ================================================================
+  function observeFadeElements() {
+    document.querySelectorAll('.fade-up:not(.visible)').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight - 60) {
+        el.classList.add('visible');
+      }
+    });
+  }
+
+  // Combined scroll handler for both
+  function onScroll() {
+    animateCounters();
+    observeFadeElements();
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // ================================================================
+  // Initial Render & Trigger
+  // ================================================================
+  renderJobs();
+  // Trigger initial animations after a brief delay to ensure layout is complete
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      onScroll();
+    });
+  });
+
+  // ================================================================
+  // Smooth scroll for anchor links (extra safety)
+  // ================================================================
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const href = this.getAttribute('href');
+      if (href === '#') return;
+      const target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>

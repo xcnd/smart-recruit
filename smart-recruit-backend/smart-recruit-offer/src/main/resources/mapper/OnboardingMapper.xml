@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartrecruit.offer.repository.OnboardingMapper">
+
+    <select id="selectPageWithFilters" resultType="com.smartrecruit.offer.entity.Onboarding">
+        SELECT * FROM rec_onboarding
+        <where>
+            deleted = 0
+            <if test="params.candidateId != null">
+                AND candidate_id = #{params.candidateId}
+            </if>
+            <if test="params.status != null and params.status != ''">
+                AND status = #{params.status}
+            </if>
+            <if test="params.startDate != null and params.startDate != ''">
+                AND expected_onboard_date &gt;= #{params.startDate}
+            </if>
+            <if test="params.endDate != null and params.endDate != ''">
+                AND expected_onboard_date &lt;= #{params.endDate}
+            </if>
+            <if test="params.employeeNo != null and params.employeeNo != ''">
+                AND employee_no LIKE CONCAT('%', #{params.employeeNo}, '%')
+            </if>
+            <if test="params.employeeName != null and params.employeeName != ''">
+                AND employee_name LIKE CONCAT('%', #{params.employeeName}, '%')
+            </if>
+            <if test="params.departmentName != null and params.departmentName != ''">
+                AND department_name LIKE CONCAT('%', #{params.departmentName}, '%')
+            </if>
+            <if test="params.positionTitle != null and params.positionTitle != ''">
+                AND position_title LIKE CONCAT('%', #{params.positionTitle}, '%')
+            </if>
+            <if test="params.employeeStatus != null and params.employeeStatus != ''">
+                AND employee_status = #{params.employeeStatus}
+            </if>
+            <if test="params.currentStep != null and params.currentStep != ''">
+                AND current_step = #{params.currentStep}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="countByStatus" resultType="java.util.HashMap">
+        SELECT status, COUNT(*) as cnt FROM rec_onboarding
+        WHERE deleted = 0 GROUP BY status
+    </select>
+
+    <select id="countByRiskLevel" resultType="java.util.HashMap">
+        SELECT risk_level, COUNT(*) as cnt FROM rec_onboarding
+        WHERE deleted = 0 AND risk_level IS NOT NULL GROUP BY risk_level
+    </select>
+
+</mapper>

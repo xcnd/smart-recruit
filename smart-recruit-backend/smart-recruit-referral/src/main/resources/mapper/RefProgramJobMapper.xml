@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartrecruit.referral.repository.RefProgramJobMapper">
+
+    <select id="selectJobDetailById" resultType="java.util.Map">
+        SELECT
+            rpj.id               AS pj_id,
+            rpj.program_id       AS pj_program_id,
+            rpj.job_position_id  AS pj_job_position_id,
+            rpj.is_enabled       AS pj_is_enabled,
+            rpj.bonus_amount     AS pj_bonus_amount,
+            rpj.tag              AS pj_tag,
+            rpj.job_title        AS pj_job_title,
+            rpj.min_salary       AS pj_min_salary,
+            rpj.max_salary       AS pj_max_salary,
+            rpj.head_count       AS pj_head_count,
+            rp.title             AS program_title,
+            rp.description       AS program_description,
+            rp.bonus_amount      AS program_bonus_amount,
+            rp.bonus_structure   AS program_bonus_structure,
+            rp.start_date        AS program_start_date,
+            rp.end_date          AS program_end_date,
+            rp.status            AS program_status,
+            rp.create_by         AS program_create_by,
+            rjp.title            AS job_title,
+            rjp.job_description  AS job_description,
+            rjp.responsibilities AS job_responsibilities,
+            rjp.requirements     AS job_requirements,
+            rjp.skills           AS job_skills,
+            rjp.min_salary       AS job_min_salary,
+            rjp.max_salary       AS job_max_salary,
+            rjp.work_location    AS job_location,
+            rjp.position_type    AS job_position_type,
+            rjp.experience_level AS job_experience_level,
+            rjp.education_level  AS job_education_level,
+            rjp.status           AS job_status,
+            rjp.department_id    AS job_department_id,
+            d.dept_name          AS job_department_name,
+            rjp.id               AS job_id
+        FROM ref_program_job rpj
+        LEFT JOIN ref_program rp ON rpj.program_id = rp.id
+        LEFT JOIN smart_recruit_recruitment.rec_job_position rjp ON rpj.job_position_id = rjp.id
+        LEFT JOIN smart_recruit_system.sys_department d ON rjp.department_id = d.id
+        WHERE rpj.id = #{programJobId}
+    </select>
+
+</mapper>

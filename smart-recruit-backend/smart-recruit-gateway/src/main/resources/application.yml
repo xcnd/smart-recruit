@@ -1,0 +1,244 @@
+# =============================================================================
+# SmartRecruit API Gateway — Application Configuration
+# =============================================================================
+# 统一入口网关服务，负责请求路由、认证鉴权、限流、CORS 处理。
+# 基于 Spring Cloud Gateway (Reactive) + Nacos 服务发现与配置中心。
+# =============================================================================
+
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: dev
+
+  application:
+    name: smart-recruit-gateway
+
+  # ================================================================
+  # 强制使用 Reactive 容器（Tomcat/Netty 并存时优先 WebFlux）
+  # ================================================================
+  main:
+    web-application-type: reactive
+    allow-bean-definition-overriding: true
+
+  # ================================================================
+  # 从 Nacos 配置中心导入网关专有配置（暂时禁用，本地 YAML 路由优先）
+  # ================================================================
+  # config:
+  #   import: optional:nacos:smart-recruit-gateway-dev.yml
+
+  # ================================================================
+  # 排除数据库相关自动配置（网关不需要数据库连接）
+  # ================================================================
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
+      - org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration
+      - org.springframework.boot.jdbc.autoconfigure.health.DataSourceHealthContributorAutoConfiguration
+
+  # ================================================================
+  # Virtual Threads (Java 25)
+  # ================================================================
+  threads:
+    virtual:
+      enabled: true
+
+  # ================================================================
+  # Spring Cloud Gateway + Nacos
+  # ================================================================
+  cloud:
+    nacos:
+      config:
+        namespace: smart-recruit
+        server-addr: 117.72.88.11:8848
+        file-extension: yaml
+        group: SMART_RECRUIT
+        enabled: false
+        username: nacos
+        password: susan123
+      discovery:
+        server-addr: 117.72.88.11:8848
+        namespace: smart-recruit
+        group: ${COMPUTER_ID:${USER:default}}
+        username: nacos
+        password: susan123
+        ip: 127.0.0.1
+        metadata:
+          developer: ${COMPUTER_ID:${USER:unknown}}
+
+    gateway:
+      server:
+        webflux:
+          # 自动发现其他服务
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+
+          # 路由配置（Spring Cloud Gateway 5.x 前缀，声明式 YAML）
+          routes:
+            # System Service (auth, users, roles, departments, permissions, notifications, files)
+            - id: smart-recruit-system
+              uri: lb://smart-recruit-system
+              predicates:
+                - Path=/api/v1/auth/**, /api/v1/users/**, /api/v1/roles/**, /api/v1/departments/**, /api/v1/permissions/**, /api/v1/notifications/**, /api/v1/files/**, /api/v1/configs/**, /api/v1/audit-logs/**, /files/download/**
+
+            # Recruitment Service (jobs, resumes, candidates)
+            - id: smart-recruit-recruitment
+              uri: lb://smart-recruit-recruitment
+              predicates:
+                - Path=/api/v1/jobs/**, /api/v1/job-statistics/**, /api/v1/resumes/**, /api/v1/resume-statistics/**, /api/v1/candidates/**, /api/v1/careers/**
+
+            # Interview Service
+            - id: smart-recruit-interview
+              uri: lb://smart-recruit-interview
+              predicates:
+                - Path=/api/v1/interviews/**, /api/v1/assessments/**, /api/v1/public/assessment/**, /api/v1/question-banks/**
+
+            # Offer Service (offers, onboarding)
+            - id: smart-recruit-offer
+              uri: lb://smart-recruit-offer
+              predicates:
+                - Path=/api/v1/offers/**, /api/v1/onboarding/**, /api/v1/contracts/**, /api/v1/public/offers/**, /api/v1/public/contracts/**
+
+            # Talent Service (talent-pool, analytics, dashboard, campaigns)
+            - id: smart-recruit-talent
+              uri: lb://smart-recruit-talent
+              predicates:
+                - Path=/api/v1/talent-pool/**, /api/v1/analytics/**, /api/v1/dashboard/**, /api/v1/campaigns/**
+
+            # Referral Service
+            - id: smart-recruit-referral
+              uri: lb://smart-recruit-referral
+              predicates:
+                - Path=/api/v1/referrals/**
+
+            # AI Engine Service
+            - id: smart-recruit-ai-engine
+              uri: lb://smart-recruit-ai-engine
+              predicates:
+                - Path=/api/v1/agents/**, /api/v2/agents/**
+
+          # HTTP 超时配置
+          httpclient:
+            connect-timeout: 3000
+            response-timeout: 300s
+            pool:
+              max-connections: 500
+              max-idle-time: 30s
+              max-life-time: 60s
+              acquire-timeout: 120000
+
+          # 全局 CORS 配置
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOriginPatterns: "*"
+                allowedMethods: "*"
+                allowedHeaders: "*"
+                allowCredentials: true
+                maxAge: 3600
+
+  # ================================================================
+  # Codec Configuration (Request Size Limits)
+  # ================================================================
+  codec:
+    max-in-memory-size: 10MB
+
+  # ================================================================
+  # Redis (Reactive) — 限流、分布式会话、缓存
+  # ================================================================
+  data:
+    redis:
+      host: ${REDIS_HOST:117.72.88.11}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:susan123}
+      database: 3
+      timeout: 10000ms
+      lettuce:
+        pool:
+          max-active: 20
+          max-wait: 3000ms
+          max-idle: 10
+          min-idle: 5
+          time-between-eviction-runs: 30s
+
+# =============================================================================
+# SmartRecruit Custom Configuration
+# =============================================================================
+smart-recruit:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY:c21hcnQtcmVjcnVpdC1zZWNyZXQta2V5LWZvci1qd3QtdG9rZW4tc2lnbmluZy0yNTY=}
+
+  gateway:
+    rate-limit:
+      max-requests-per-minute: ${RATE_LIMIT_MAX_RPM:200}
+    cors:
+      allowed-origins: "*"
+
+# =============================================================================
+# 网关认证跳过路径（无需 JWT 认证，AuthFilter 读取）
+# =============================================================================
+gateway:
+  auth-skip:
+    # 无需认证的精确路径（支持 Ant 通配符）
+    exact-paths:
+      - /api/v1/auth/login
+      - /api/v1/auth/register
+      - /api/v1/auth/send-code
+      - /api/v1/auth/reset-password
+      - /api/v1/auth/captcha
+      - /api/v1/auth/refresh
+      - /api/v1/configs/public/**
+      - /api/v1/careers/jobs/public/**
+      - /files/download/**
+      - /api/v1/files/download/**
+      - /actuator/health
+      - /doc.html
+      - /swagger-resources
+      - /v3/api-docs
+    # 无需认证的路径前缀
+    path-prefixes:
+      - /api/v1/auth/
+      - /api/v1/public/
+      - /api/v1/referrals/public/
+      - /api/v2/agents/
+      - /actuator/
+      - /doc.html
+      - /swagger-resources/
+      - /swagger-ui/
+      - /v3/api-docs/
+      - /webjars/
+
+# =============================================================================
+# Actuator — Health Checks & Observability
+# =============================================================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: when-authorized
+    gateway:
+      enabled: true
+  health:
+    redis:
+      enabled: true
+
+# =============================================================================
+# Logging
+# =============================================================================
+logging:
+  level:
+    root: INFO
+    com.smartrecruit.gateway: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.gateway.filter: DEBUG
+    org.springframework.cloud.gateway.handler: DEBUG
+    org.springframework.cloud.gateway.route: DEBUG
+    com.alibaba.cloud.nacos: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{traceId}] %-5level %logger{36} - %msg%n"

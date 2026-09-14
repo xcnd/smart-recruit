@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartrecruit.recruitment.repository.CareersJobPositionMapper">
+
+    <resultMap id="BaseResultMap" type="com.smartrecruit.recruitment.entity.CareersJobPosition">
+        <id column="id" property="id"/>
+        <result column="rec_type" property="recType"/>
+        <result column="title" property="title"/>
+        <result column="dept" property="dept"/>
+        <result column="location" property="location"/>
+        <result column="exp" property="exp"/>
+        <result column="salary" property="salary"/>
+        <result column="category" property="category"/>
+        <result column="tags" property="tags"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result column="responsibilities" property="responsibilities"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result column="requirements" property="requirements"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result column="bonus" property="bonus"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result column="sort_order" property="sortOrder"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <select id="pageQueryByType" resultMap="BaseResultMap">
+        SELECT *
+        FROM careers_job_position
+        <where>
+            deleted = 0
+            <if test="recType != null and recType != ''">
+                AND rec_type = #{recType}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (
+                    title LIKE CONCAT('%', #{keyword}, '%')
+                    OR dept LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+            <if test="category != null and category != ''">
+                AND category = #{category}
+            </if>
+        </where>
+        ORDER BY create_time DESC, sort_order ASC
+    </select>
+
+</mapper>

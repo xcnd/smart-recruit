@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartrecruit.recruitment.repository.ResumeMapper">
+
+    <resultMap id="BaseResultMap" type="com.smartrecruit.recruitment.entity.Resume">
+        <id column="id" property="id"/>
+        <result column="candidate_id" property="candidateId"/>
+        <result column="job_position_id" property="jobPositionId"/>
+        <result column="ai_match_score" property="aiMatchScore"/>
+        <result column="file_name" property="fileName"/>
+        <result column="file_path" property="fileUrl"/>
+        <result column="file_type" property="fileType"/>
+        <result column="file_size" property="fileSize"/>
+        <result column="parsed_content" property="parsedContent"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result column="parse_status" property="parseStatus"/>
+        <result column="screening_status" property="screeningStatus"/>
+        <result column="create_time" property="createdAt"/>
+    </resultMap>
+
+    <select id="findByCandidateId" resultMap="BaseResultMap">
+        SELECT * FROM rec_resume
+        WHERE candidate_id = #{candidateId}
+        ORDER BY create_time DESC
+    </select>
+
+</mapper>

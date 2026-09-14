@@ -1,0 +1,60 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: smart-recruit-talent
+  datasource:
+    url: jdbc:mysql://localhost:3306/smart_recruit_talent?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: SmartRecruitHikariPool
+      minimum-idle: 5
+      maximum-pool-size: 20
+      connection-timeout: 60000
+      idle-timeout: 300000
+      max-lifetime: 1800000
+      connection-test-query: SELECT 1
+  # Redis — AI 人才推荐结果缓存（同一岗位 15 分钟内直接命中，避免重复调用大模型）
+  data:
+    redis:
+      host: ${REDIS_HOST:117.72.88.11}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:susan123}
+      database: 5
+      timeout: 5000ms
+      lettuce:
+        pool:
+          max-active: 20
+          max-wait: 3000ms
+          max-idle: 10
+          min-idle: 5
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.smartrecruit.talent.entity
+  global-config:
+    db-config:
+      id-type: assign_id
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    com.smartrecruit.talent: DEBUG
+    com.smartrecruit.talent.repository: DEBUG
+
+# 人才搜索：Elasticsearch 语义检索（不可用时自动降级本地语义排序）
+talent:
+  search:
+    elasticsearch:
+      enabled: ${TALENT_ES_ENABLED:true}
+      uris: ${TALENT_ES_URIS:http://117.72.88.11:9200}
+      username: ${TALENT_ES_USERNAME:elastic}
+      password: ${TALENT_ES_PASSWORD:susan123}
+      index: talent_pool

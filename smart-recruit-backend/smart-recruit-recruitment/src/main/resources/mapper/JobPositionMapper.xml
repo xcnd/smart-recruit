@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartrecruit.recruitment.repository.JobPositionMapper">
+
+    <resultMap id="BaseResultMap" type="com.smartrecruit.recruitment.entity.JobPosition">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="department_id" property="departmentId"/>
+        <result column="experience_level" property="level"/>
+        <result column="hc_total" property="headCount"/>
+        <result column="min_salary" property="salaryMin"/>
+        <result column="max_salary" property="salaryMax"/>
+        <result column="is_urgent" property="urgency"/>
+        <result column="status" property="status"/>
+        <result column="position_type" property="type"/>
+        <result column="work_location" property="location"/>
+        <result column="job_description" property="description"/>
+        <result column="skills" property="skills"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result column="publish_time" property="publishedAt"/>
+        <result column="create_by" property="createdBy"/>
+        <result column="create_time" property="createdAt"/>
+        <result column="application_count" property="applicationCount"/>
+        <result column="update_time" property="updatedAt"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <select id="pageQuery" resultMap="BaseResultMap">
+        SELECT j.*,
+               (SELECT COUNT(*) FROM rec_application a WHERE a.job_position_id = j.id AND a.deleted = 0) AS application_count
+        FROM rec_job_position j
+        <where>
+            j.deleted = 0
+            <if test="title != null and title != ''">
+                AND j.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="departmentId != null">
+                AND j.department_id = #{departmentId}
+            </if>
+            <if test="status != null">
+                AND j.status = #{status}
+            </if>
+            <if test="type != null">
+                AND j.position_type = #{type}
+            </if>
+            <if test="location != null and location != ''">
+                AND j.work_location LIKE CONCAT('%', #{location}, '%')
+            </if>
+            <if test="startDate != null and startDate != ''">
+                AND j.publish_time &gt;= #{startDate}
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND j.publish_time &lt;= #{endDate}
+            </if>
+        </where>
+        ORDER BY j.create_time DESC
+    </select>
+
+    <select id="statsByDepartment" resultType="com.smartrecruit.recruitment.dto.response.DepartmentJobStatVO">
+        SELECT department_id AS departmentId,
+               COUNT(*) AS jobCount,
+               SUM(hc_total) AS totalHeadCount,
+               SUM(CASE WHEN is_urgent IN (1, 2) THEN 1 ELSE 0 END) AS urgentCount
+        FROM rec_job_position
+        WHERE deleted = 0 AND status = 1
+        GROUP BY department_id
+    </select>
+
+    <select id="statsByLevel" resultType="com.smartrecruit.recruitment.dto.response.LevelJobStatVO">
+        SELECT experience_level AS level,
+               COUNT(*) AS jobCount,
+               SUM(hc_total) AS totalHeadCount
+        FROM rec_job_position
+        WHERE deleted = 0 AND status = 1
+        GROUP BY experience_level
+    </select>
+
+    <select id="departmentProgress" resultType="com.smartrecruit.recruitment.dto.response.DepartmentProgressVO">
+        SELECT j.department_id AS departmentId,
+               COUNT(DISTINCT j.id) AS activeJobCount,
+               COALESCE(SUM(j.hc_total), 0) AS plannedHeadCount,
+               COALESCE(SUM(h.hiredCount), 0) AS hiredCount
+        FROM rec_job_position j
+        LEFT JOIN (
+            SELECT r.job_position_id, COUNT(*) AS hiredCount
+            FROM rec_resume r
+            INNER JOIN rec_candidate c ON c.id = r.candidate_id AND c.deleted = 0
+            WHERE c.status = 5
+            GROUP BY r.job_position_id
+        ) h ON h.job_position_id = j.id
+        WHERE j.deleted = 0 AND j.status = 1
+        GROUP BY j.department_id
+    </select>
+
+</mapper>

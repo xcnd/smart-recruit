@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartrecruit.system.repository.SysRolePermissionMapper">
+
+    <!-- Select permission IDs by role ID -->
+    <select id="selectPermissionIdsByRoleId" resultType="java.lang.Long">
+        SELECT permission_id
+        FROM sys_role_permission
+        WHERE role_id = #{roleId}
+    </select>
+
+    <!-- Delete all permission associations for a role -->
+    <delete id="deleteByRoleId">
+        DELETE FROM sys_role_permission
+        WHERE role_id = #{roleId}
+    </delete>
+
+    <!-- Delete all role associations for a permission -->
+    <delete id="deleteByPermissionId">
+        DELETE FROM sys_role_permission
+        WHERE permission_id = #{permId}
+    </delete>
+
+</mapper>

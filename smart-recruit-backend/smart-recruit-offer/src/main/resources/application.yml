@@ -1,0 +1,44 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: smart-recruit-offer
+  datasource:
+    url: jdbc:mysql://localhost:3306/smart_recruit_offer?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: SmartRecruitHikariPool
+      minimum-idle: 5
+      maximum-pool-size: 20
+      connection-timeout: 60000
+      idle-timeout: 300000
+      max-lifetime: 1800000
+      connection-test-query: SELECT 1
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.smartrecruit.offer.entity
+  global-config:
+    db-config:
+      id-type: assign_id
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    com.smartrecruit.offer: DEBUG
+    com.smartrecruit.offer.repository: DEBUG
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET_KEY:c21hcnQtcmVjcnVpdC1zZWNyZXQta2V5LWZvci1qd3QtdG9rZW4tc2lnbmluZy0yNTY=}
+
+# 前端地址（用于邮件中的链接跳转）
+smart-recruit:
+  frontend-url: ${FRONTEND_URL:http://localhost:3000}

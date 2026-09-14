@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartrecruit.interview.repository.InterviewMapper">
+
+    <select id="selectPageWithFilters" resultType="com.smartrecruit.interview.entity.Interview">
+        SELECT * FROM rec_interview
+        <where>
+            deleted = 0
+            <if test="params.candidateId != null">
+                AND candidate_id = #{params.candidateId}
+            </if>
+            <if test="params.jobPositionId != null">
+                AND job_position_id = #{params.jobPositionId}
+            </if>
+            <if test="params.status != null and params.status != ''">
+                AND status = #{params.status}
+            </if>
+            <if test="params.type != null and params.type != ''">
+                AND type = #{params.type}
+            </if>
+            <if test="params.candidateName != null and params.candidateName != ''">
+                AND candidate_name LIKE CONCAT('%', #{params.candidateName}, '%')
+            </if>
+            <if test="params.interviewerIds != null and params.interviewerIds.size() > 0">
+                AND (
+                    <foreach collection="params.interviewerIds" item="id" separator=" OR ">
+                        JSON_CONTAINS(interviewer_ids, CAST(#{id} AS JSON))
+                    </foreach>
+                )
+            </if>
+            <if test="params.startDate != null and params.startDate != ''">
+                AND scheduled_time &gt;= #{params.startDate}
+            </if>
+            <if test="params.endDate != null and params.endDate != ''">
+                AND scheduled_time &lt;= #{params.endDate}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectStats" resultType="java.util.LinkedHashMap">
+        SELECT
+            COUNT(*) AS total,
+            COALESCE(SUM(CASE WHEN DATE(scheduled_time) = CURDATE() THEN 1 ELSE 0 END), 0) AS today,
+            COALESCE(SUM(CASE WHEN result = 0 THEN 1 ELSE 0 END), 0) AS passed,
+            COALESCE(SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END), 0) AS cancelled
+        FROM rec_interview
+        WHERE deleted = 0
+    </select>
+
+    <select id="selectStatsRange" resultType="java.util.LinkedHashMap">
+        SELECT
+            COUNT(*) AS total,
+            0 AS today,
+            COALESCE(SUM(CASE WHEN result = 0 THEN 1 ELSE 0 END), 0) AS passed,
+            COALESCE(SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END), 0) AS cancelled
+        FROM rec_interview
+        WHERE deleted = 0
+        <if test="start != null">
+            AND create_time &gt;= #{start}
+        </if>
+        <if test="end != null">
+            AND create_time &lt; #{end}
+        </if>
+    </select>
+
+    <select id="selectScheduleByDate" resultType="com.smartrecruit.interview.entity.Interview">
+        SELECT * FROM rec_interview
+        WHERE deleted = 0
+          AND status NOT IN (3, 5)
+          AND scheduled_time &gt;= #{date}
+          AND scheduled_time &lt; DATE_ADD(#{date}, INTERVAL 1 DAY)
+        ORDER BY scheduled_time ASC
+    </select>
+
+    <select id="selectScheduleByDateRange" resultType="com.smartrecruit.interview.entity.Interview">
+        SELECT * FROM rec_interview
+        WHERE deleted = 0
+          AND status NOT IN (3, 5)
+          AND scheduled_time &gt;= #{startDate}
+          AND scheduled_time &lt; DATE_ADD(#{endDate}, INTERVAL 1 DAY)
+        ORDER BY scheduled_time ASC
+    </select>
+
+    <select id="selectRealNamesByIds" resultType="java.util.LinkedHashMap">
+        SELECT id, real_name FROM smart_recruit_system.sys_user
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="selectAiStats" resultType="java.util.LinkedHashMap">
+        SELECT
+            COALESCE(SUM(CASE WHEN DATE(i.scheduled_time) = CURDATE() AND i.deleted = 0 THEN 1 ELSE 0 END), 0) AS todayInterviews,
+            COALESCE(SUM(CASE WHEN i.status = 2 AND i.deleted = 0 THEN 1 ELSE 0 END), 0) AS completed,
+            COALESCE((SELECT COUNT(*) FROM rec_interview_assessment a WHERE a.interview_id IS NOT NULL), 0) AS aiAssessed,
+            COALESCE(
+                ROUND(
+                    SUM(CASE WHEN i.status = 2 AND i.result = 0 AND i.deleted = 0 THEN 1 ELSE 0 END) * 100.0
+                    / NULLIF(SUM(CASE WHEN i.status = 2 AND i.deleted = 0 THEN 1 ELSE 0 END), 0),
+                    1
+                ), 0
+            ) AS passRate
+        FROM rec_interview i
+        WHERE i.deleted = 0
+    </select>
+
+    <select id="selectAssessedCandidates" resultType="java.util.LinkedHashMap">
+        SELECT
+            i.id              AS interview_id,
+            i.candidate_id    AS candidate_id,
+            i.candidate_name  AS candidate_name,
+            i.job_title       AS job_title,
+            jp.department_id  AS department_id,
+            a.overall_score   AS overall_score,
+            DATE_FORMAT(COALESCE(a.create_time, i.update_time), '%Y-%m-%d %H:%i') AS assessed_at
+        FROM rec_interview i
+        LEFT JOIN rec_interview_assessment a ON a.interview_id = i.id
+        LEFT JOIN `smart_recruit_recruitment`.`rec_job_position` jp
+               ON jp.id = i.job_position_id AND jp.deleted = 0
+        WHERE i.deleted = 0 AND i.status != 3
+        ORDER BY COALESCE(a.create_time, i.update_time) DESC
+    </select>
+
+</mapper>

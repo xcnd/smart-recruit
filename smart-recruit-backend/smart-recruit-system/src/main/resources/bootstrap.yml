@@ -1,0 +1,26 @@
+# =============================================================================
+# Nacos 配置中心 — 引导配置（优先于 application.yml 加载）
+# =============================================================================
+spring:
+  application:
+    name: smart-recruit-system
+  cloud:
+    nacos:
+      config:
+        namespace: smart-recruit
+        server-addr: 117.72.88.11:8848
+        file-extension: yaml
+        group: SMART_RECRUIT
+        enabled: true
+        username: nacos
+        password: susan123
+      discovery:
+        server-addr: 117.72.88.11:8848
+        namespace: smart-recruit
+        group: ${COMPUTER_ID:${USER:default}}
+        username: nacos
+        password: susan123
+        ip: 127.0.0.1
+  config:
+    import:
+      - optional:nacos:smart-recruit-system-dev.yml

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartrecruit.referral.repository.RefShareTokenMapper">
+
+    <select id="selectByToken" resultType="com.smartrecruit.referral.entity.RefShareToken">
+        SELECT id, token, program_id AS programId, referrer_name AS referrerName,
+               source, referral_code AS referralCode, referrer_id AS referrerId,
+               create_time AS createTime
+        FROM ref_share_token
+        WHERE token = #{token}
+    </select>
+
+    <select id="selectByReferralCode" resultType="com.smartrecruit.referral.entity.RefShareToken">
+        SELECT id, token, program_id AS programId, referrer_name AS referrerName,
+               source, referral_code AS referralCode, referrer_id AS referrerId,
+               create_time AS createTime
+        FROM ref_share_token
+        WHERE referral_code = #{referralCode}
+        LIMIT 1
+    </select>
+</mapper>

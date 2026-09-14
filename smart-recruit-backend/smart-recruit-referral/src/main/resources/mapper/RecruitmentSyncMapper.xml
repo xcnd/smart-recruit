@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartrecruit.referral.repository.RecruitmentSyncMapper">
+
+    <insert id="insertCandidate">
+        INSERT INTO smart_recruit_recruitment.rec_candidate
+            (id, name, email, mobile, source, referrer_id, status, create_time)
+        VALUES
+            (#{id}, #{name}, #{email}, #{phone}, #{source}, #{referrerId}, 0, #{createdAt})
+    </insert>
+
+    <insert id="insertResume">
+        INSERT INTO smart_recruit_recruitment.rec_resume
+            (id, candidate_id, job_position_id, file_name, file_path, file_type,
+             file_size, parse_status, screening_status, create_time)
+        VALUES
+            (#{id}, #{candidateId}, #{jobPositionId}, #{fileName}, #{fileUrl}, #{fileType},
+             #{fileSize}, #{parseStatus}, 0, #{createdAt})
+    </insert>
+
+    <select id="findCandidateIdByEmail" resultType="Long">
+        SELECT id FROM smart_recruit_recruitment.rec_candidate
+        WHERE email = #{email}
+        LIMIT 1
+    </select>
+
+    <select id="findCandidateIdByUserId" resultType="Long">
+        SELECT c.id
+        FROM smart_recruit_recruitment.rec_candidate c
+        INNER JOIN smart_recruit_system.sys_user u ON c.mobile = u.mobile
+        WHERE u.id = #{userId}
+        LIMIT 1
+    </select>
+
+    <update id="updateCandidate">
+        UPDATE smart_recruit_recruitment.rec_candidate
+        SET name = #{name}, mobile = #{phone}
+        WHERE id = #{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartrecruit.referral.repository.ReferralRecordMapper">
+
+    <select id="findByReferrerId" resultType="com.smartrecruit.referral.entity.ReferralRecord">
+        SELECT id, program_id, program_job_id, referrer_id, candidate_id,
+               job_position_id, relationship, referral_note, status, bonus_status,
+               bonus_amount, bonus_paid, hired_time, create_time, update_time
+        FROM ref_record
+        WHERE referrer_id = #{referrerId}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="findByReferrerIdWithDetails" resultType="com.smartrecruit.referral.dto.response.ReferralRecordVO">
+        SELECT
+            r.id,
+            r.program_id AS programId,
+            r.program_job_id AS programJobId,
+            r.referrer_id AS referrerId,
+            r.candidate_id AS candidateId,
+            r.job_position_id AS jobPositionId,
+            r.relationship,
+            r.referral_note AS referralNote,
+            r.status,
+            r.bonus_status AS bonusStatus,
+            r.bonus_amount AS bonusAmount,
+            r.bonus_paid AS bonusPaid,
+            r.hired_time AS hiredTime,
+            r.create_time AS createTime,
+            r.update_time AS updateTime,
+            c.name AS candidateName,
+            NULL AS candidateUsername,
+            jp.title AS jobTitle,
+            d.dept_name AS departmentName,
+            pjp.title AS programJobTitle
+        FROM ref_record r
+        LEFT JOIN smart_recruit_recruitment.rec_candidate c ON r.candidate_id = c.id
+        LEFT JOIN smart_recruit_recruitment.rec_job_position jp ON r.job_position_id = jp.id
+        LEFT JOIN smart_recruit_system.sys_department d ON jp.department_id = d.id
+        LEFT JOIN ref_program_job pj ON r.program_job_id = pj.id
+        LEFT JOIN smart_recruit_recruitment.rec_job_position pjp ON pj.job_position_id = pjp.id
+        WHERE r.referrer_id = #{referrerId}
+        ORDER BY r.create_time DESC
+    </select>
+
+    <select id="findByCandidateIdWithDetails" resultType="com.smartrecruit.referral.dto.response.ReferralRecordVO">
+        SELECT
+            r.id,
+            r.program_id AS programId,
+            r.program_job_id AS programJobId,
+            r.referrer_id AS referrerId,
+            r.candidate_id AS candidateId,
+            r.job_position_id AS jobPositionId,
+            r.relationship,
+            r.referral_note AS referralNote,
+            r.status,
+            r.bonus_status AS bonusStatus,
+            r.bonus_amount AS bonusAmount,
+            r.bonus_paid AS bonusPaid,
+            r.hired_time AS hiredTime,
+            r.create_time AS createTime,
+            r.update_time AS updateTime,
+            c.name AS candidateName,
+            NULL AS candidateUsername,
+            jp.title AS jobTitle,
+            d.dept_name AS departmentName,
+            pjp.title AS programJobTitle
+        FROM ref_record r
+        LEFT JOIN smart_recruit_recruitment.rec_candidate c ON r.candidate_id = c.id
+        LEFT JOIN smart_recruit_recruitment.rec_job_position jp ON r.job_position_id = jp.id
+        LEFT JOIN smart_recruit_system.sys_department d ON jp.department_id = d.id
+        LEFT JOIN ref_program_job pj ON r.program_job_id = pj.id
+        LEFT JOIN smart_recruit_recruitment.rec_job_position pjp ON pj.job_position_id = pjp.id
+        WHERE r.candidate_id = #{candidateId}
+        ORDER BY r.create_time DESC
+    </select>
+
+    <!-- 内推记录查询的复用 WHERE 条件片段 -->
+    <sql id="recordQueryWhere">
+        <if test="query.keyword != null and query.keyword != ''">
+            AND (
+                su.real_name LIKE CONCAT('%', #{query.keyword}, '%')
+                OR c.name LIKE CONCAT('%', #{query.keyword}, '%')
+                OR c.email LIKE CONCAT('%', #{query.keyword}, '%')
+                OR c.mobile LIKE CONCAT('%', #{query.keyword}, '%')
+                OR jp.title LIKE CONCAT('%', #{query.keyword}, '%')
+                OR pjp.title LIKE CONCAT('%', #{query.keyword}, '%')
+            )
+        </if>
+        <if test="query.status != null">
+            AND r.status = #{query.status}
+        </if>
+        <if test="query.referrerId != null">
+            AND r.referrer_id = #{query.referrerId}
+        </if>
+        <if test="query.programId != null">
+            AND r.program_id = #{query.programId}
+        </if>
+    </sql>
+
+    <select id="countRecords" resultType="long">
+        SELECT COUNT(1)
+        FROM ref_record r
+        LEFT JOIN smart_recruit_system.sys_user su ON r.candidate_id = su.id
+        LEFT JOIN smart_recruit_recruitment.rec_candidate c ON r.candidate_id = c.id
+        LEFT JOIN smart_recruit_recruitment.rec_job_position jp ON r.job_position_id = jp.id
+        LEFT JOIN ref_program_job pj ON r.program_job_id = pj.id
+        LEFT JOIN smart_recruit_recruitment.rec_job_position pjp ON pj.job_position_id = pjp.id
+        <where>
+            <include refid="recordQueryWhere"/>
+        </where>
+    </select>
+
+    <select id="queryRecords" resultType="com.smartrecruit.referral.dto.response.ReferralRecordVO">
+        SELECT
+            r.id,
+            r.program_id AS programId,
+            r.program_job_id AS programJobId,
+            r.referrer_id AS referrerId,
+            r.candidate_id AS candidateId,
+            r.job_position_id AS jobPositionId,
+            r.relationship,
+            r.referral_note AS referralNote,
+            r.status,
+            r.bonus_status AS bonusStatus,
+            r.bonus_amount AS bonusAmount,
+            r.bonus_paid AS bonusPaid,
+            r.hired_time AS hiredTime,
+            r.create_time AS createTime,
+            r.update_time AS updateTime,
+            COALESCE(su.real_name, c.name) AS candidateName,
+            su.username AS candidateUsername,
+            jp.title AS jobTitle,
+            d.dept_name AS departmentName,
+            pjp.title AS programJobTitle
+        FROM ref_record r
+        LEFT JOIN smart_recruit_system.sys_user su ON r.candidate_id = su.id
+        LEFT JOIN smart_recruit_recruitment.rec_candidate c ON r.candidate_id = c.id
+        LEFT JOIN smart_recruit_recruitment.rec_job_position jp ON r.job_position_id = jp.id
+        LEFT JOIN smart_recruit_system.sys_department d ON jp.department_id = d.id
+        LEFT JOIN ref_program_job pj ON r.program_job_id = pj.id
+        LEFT JOIN smart_recruit_recruitment.rec_job_position pjp ON pj.job_position_id = pjp.id
+        <where>
+            <include refid="recordQueryWhere"/>
+        </where>
+        ORDER BY r.create_time DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countByCandidateIdAndProgramJobId" resultType="int">
+        SELECT COUNT(1) FROM ref_record
+        WHERE candidate_id = #{candidateId}
+          AND program_job_id = #{programJobId}
+    </select>
+
+    <select id="countByReferrerCandidateJob" resultType="int">
+        SELECT COUNT(1) FROM ref_record
+        WHERE
+            <if test="referrerId != null">
+                referrer_id = #{referrerId}
+            </if>
+            <if test="referrerId == null">
+                referrer_id IS NULL
+            </if>
+          AND candidate_id = #{candidateId}
+          AND job_position_id = #{jobPositionId}
+    </select>
+
+    <select id="selectLeaderboard" resultType="com.smartrecruit.referral.dto.response.LeaderboardVO">
+        SELECT
+            r.referrer_id AS referrerId,
+            u.real_name AS referrerName,
+            d.dept_name AS departmentName,
+            u.avatar AS avatar,
+            COUNT(*) AS referralCount,
+            COALESCE(SUM(r.bonus_amount), 0) AS totalBonus
+        FROM ref_record r
+        LEFT JOIN smart_recruit_system.sys_user u ON r.referrer_id = u.id
+        LEFT JOIN smart_recruit_system.sys_department d ON u.department_id = d.id
+        WHERE r.status = 3
+        GROUP BY r.referrer_id, u.real_name, d.dept_name, u.avatar
+        ORDER BY referralCount DESC, totalBonus DESC
+        LIMIT #{limit}
+    </select>
+
+</mapper>

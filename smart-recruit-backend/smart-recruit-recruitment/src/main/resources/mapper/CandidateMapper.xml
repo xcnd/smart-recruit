@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartrecruit.recruitment.repository.CandidateMapper">
+
+    <resultMap id="BaseResultMap" type="com.smartrecruit.recruitment.entity.Candidate">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="email" property="email"/>
+        <result column="mobile" property="phone"/>
+        <result column="gender" property="gender"/>
+        <result column="birth_date" property="birthDate"/>
+        <result column="avatar_color" property="avatarColor"/>
+        <result column="education_level" property="education"/>
+        <result column="school" property="school"/>
+        <result column="major" property="major"/>
+        <result column="years_of_experience" property="yearsOfExperience"/>
+        <result column="current_company" property="currentCompany"/>
+        <result column="current_position" property="currentPosition"/>
+        <result column="current_salary" property="currentSalary"/>
+        <result column="expected_salary_min" property="expectedSalaryMin"/>
+        <result column="expected_salary_max" property="expectedSalaryMax"/>
+        <result column="city" property="city"/>
+        <result column="skills" property="skills"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result column="source" property="source"/>
+        <result column="source_detail" property="sourceDetail"/>
+        <result column="status" property="currentStage"/>
+        <result column="tags" property="tags"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result column="ai_match_score" property="aiMatchScore"/>
+        <result column="last_active_time" property="lastActiveTime"/>
+        <result column="remark" property="remark"/>
+        <result column="avatar_url" property="avatarUrl"/>
+        <result column="referrer_id" property="referrerId"/>
+        <result column="create_by" property="createdBy"/>
+        <result column="create_time" property="createdAt"/>
+        <result column="update_time" property="updatedAt"/>
+        <result column="deleted" property="deleted"/>
+        <result column="version" property="version"/>
+    </resultMap>
+
+    <select id="pageQuery" resultMap="BaseResultMap">
+        SELECT c.*
+        FROM rec_candidate c
+        LEFT JOIN rec_resume r ON r.candidate_id = c.id
+        LEFT JOIN rec_job_position j ON j.id = r.job_position_id AND j.deleted = 0
+        <where>
+            c.deleted = 0
+            <if test="name != null and name != ''">
+                AND c.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (c.name LIKE CONCAT('%', #{keyword}, '%')
+                     OR c.email LIKE CONCAT('%', #{keyword}, '%')
+                     OR c.mobile LIKE CONCAT('%', #{keyword}, '%')
+                     OR j.title LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="stage != null">
+                AND c.status = #{stage}
+            </if>
+            <if test="source != null">
+                AND c.source = #{source}
+            </if>
+            <if test="education != null">
+                AND c.education_level = #{education}
+            </if>
+            <if test="aiMatchScoreMin != null">
+                AND c.ai_match_score &gt;= #{aiMatchScoreMin}
+            </if>
+            <if test="aiMatchScoreMax != null">
+                AND c.ai_match_score &lt;= #{aiMatchScoreMax}
+            </if>
+            <if test="experienceMin != null">
+                AND c.years_of_experience &gt;= #{experienceMin}
+            </if>
+            <if test="experienceMax != null">
+                AND c.years_of_experience &lt;= #{experienceMax}
+            </if>
+            <if test="city != null and city != ''">
+                AND c.city LIKE CONCAT('%', #{city}, '%')
+            </if>
+            <if test="applyDateStart != null and applyDateStart != ''">
+                AND c.create_time &gt;= #{applyDateStart}
+            </if>
+            <if test="applyDateEnd != null and applyDateEnd != ''">
+                AND c.create_time &lt;= CONCAT(#{applyDateEnd}, ' 23:59:59')
+            </if>
+            <if test="screeningStatus != null">
+                AND (r.id IS NULL OR r.screening_status = #{screeningStatus})
+            </if>
+        </where>
+        GROUP BY c.id
+        ORDER BY c.create_time DESC
+    </select>
+
+    <select id="stageDistribution" resultType="java.util.HashMap">
+        SELECT c.status AS stage, COUNT(*) AS count
+        FROM rec_candidate c
+        WHERE c.deleted = 0
+        GROUP BY c.status
+    </select>
+
+    <select id="sourceDistribution" resultType="java.util.HashMap">
+        SELECT c.source AS source, COUNT(*) AS count
+        FROM rec_candidate c
+        WHERE c.deleted = 0
+        GROUP BY c.source
+    </select>
+
+    <select id="monthlyTrend" resultType="java.util.HashMap">
+        SELECT DATE_FORMAT(c.create_time, '%Y-%m') AS month, COUNT(*) AS count
+        FROM rec_candidate c
+        WHERE c.deleted = 0
+          AND c.create_time &gt;= DATE_SUB(NOW(), INTERVAL #{months} MONTH)
+        GROUP BY DATE_FORMAT(c.create_time, '%Y-%m')
+        ORDER BY month ASC
+    </select>
+
+    <select id="stageDistributionRange" resultType="java.util.HashMap">
+        SELECT c.status AS stage, COUNT(*) AS count
+        FROM rec_candidate c
+        WHERE c.deleted = 0
+        <if test="start != null">
+            AND c.create_time &gt;= #{start}
+        </if>
+        <if test="end != null">
+            AND c.create_time &lt; #{end}
+        </if>
+        GROUP BY c.status
+    </select>
+
+    <select id="sourceDistributionRange" resultType="java.util.HashMap">
+        SELECT c.source AS source, COUNT(*) AS count
+        FROM rec_candidate c
+        WHERE c.deleted = 0
+        <if test="start != null">
+            AND c.create_time &gt;= #{start}
+        </if>
+        <if test="end != null">
+            AND c.create_time &lt; #{end}
+        </if>
+        GROUP BY c.source
+    </select>
+
+    <select id="sourceHireDistributionRange" resultType="java.util.HashMap">
+        SELECT c.source AS source, COUNT(*) AS count
+        FROM rec_candidate c
+        WHERE c.deleted = 0
+          AND c.status = 5
+        <if test="start != null">
+            AND c.create_time &gt;= #{start}
+        </if>
+        <if test="end != null">
+            AND c.create_time &lt; #{end}
+        </if>
+        GROUP BY c.source
+    </select>
+
+    <select id="monthlyTrendRange" resultType="java.util.HashMap">
+        SELECT DATE_FORMAT(c.create_time, '%Y-%m') AS month, COUNT(*) AS count
+        FROM rec_candidate c
+        WHERE c.deleted = 0
+          AND c.create_time &gt;= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL #{months} - 1 MONTH), '%Y-%m-01')
+        GROUP BY DATE_FORMAT(c.create_time, '%Y-%m')
+        ORDER BY month ASC
+    </select>
+
+    <select id="dailyStageSourceCounts" resultType="java.util.HashMap">
+        SELECT c.status AS stage, c.source AS source, COUNT(*) AS count
+        FROM rec_candidate c
+        WHERE c.deleted = 0
+          AND c.create_time &gt;= #{start}
+          AND c.create_time &lt; #{end}
+        GROUP BY c.status, c.source
+    </select>
+
+</mapper>

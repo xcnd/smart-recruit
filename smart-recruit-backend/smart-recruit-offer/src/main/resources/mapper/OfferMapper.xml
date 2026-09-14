@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartrecruit.offer.repository.OfferMapper">
+
+    <resultMap id="BaseResultMap" type="com.smartrecruit.offer.entity.Offer" autoMapping="true">
+        <result column="salary_structure" property="salaryStructure"
+                typeHandler="com.baomidou.mybatisplus.extension.handlers.Fastjson2TypeHandler"/>
+    </resultMap>
+
+    <select id="selectPageWithFilters" resultMap="BaseResultMap">
+        SELECT * FROM rec_offer
+        <where>
+            deleted = 0
+            <if test="params.candidateId != null">
+                AND candidate_id = #{params.candidateId}
+            </if>
+            <if test="params.candidateName != null and params.candidateName != ''">
+                AND candidate_name LIKE CONCAT('%', #{params.candidateName}, '%')
+            </if>
+            <if test="params.status != null and params.status != ''">
+                AND status = #{params.status}
+            </if>
+            <if test="params.departmentName != null and params.departmentName != ''">
+                AND department_name LIKE CONCAT('%', #{params.departmentName}, '%')
+            </if>
+            <if test="params.offerNo != null and params.offerNo != ''">
+                AND offer_no LIKE CONCAT('%', #{params.offerNo}, '%')
+            </if>
+            <if test="params.expectedOnboardDate != null and params.expectedOnboardDate != ''">
+                AND expected_onboard_date = #{params.expectedOnboardDate}
+            </if>
+            <if test="params.startDate != null and params.startDate != ''">
+                AND create_time >= #{params.startDate}
+            </if>
+            <if test="params.endDate != null and params.endDate != ''">
+                AND create_time &lt;= #{params.endDate}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+</mapper>

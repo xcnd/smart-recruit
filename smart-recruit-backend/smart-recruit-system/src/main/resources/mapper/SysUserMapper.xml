@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartrecruit.system.repository.SysUserMapper">
+
+    <!-- UserVO Result Map (constructor-based for Java record) -->
+    <resultMap id="UserVOMap" type="com.smartrecruit.system.dto.response.UserVO">
+        <constructor>
+            <idArg column="id" javaType="Long"/>
+            <arg column="username" javaType="String"/>
+            <arg column="real_name" javaType="String"/>
+            <arg column="email" javaType="String"/>
+            <arg column="mobile" javaType="String"/>
+            <arg column="avatar" javaType="String"/>
+            <arg column="dept_id" javaType="Long"/>
+            <arg column="department_name" javaType="String"/>
+            <arg column="role_name" javaType="String"/>
+            <arg column="role_ids" javaType="String"/>
+            <arg column="gender" javaType="Integer"/>
+            <arg column="position" javaType="String"/>
+            <arg column="job_level" javaType="String"/>
+            <arg column="age" javaType="Integer"/>
+            <arg column="status" javaType="Integer"/>
+            <arg column="last_login_time" javaType="java.time.LocalDateTime"/>
+            <arg column="create_time" javaType="java.time.LocalDateTime"/>
+            <!-- permissions 恒为 NULL：javaType 必须与 record 组件类型（List）一致，
+                 显式指定 ObjectTypeHandler 避免 List 无默认 TypeHandler 导致解析失败 -->
+            <arg column="permissions" javaType="java.util.List"
+                 typeHandler="org.apache.ibatis.type.ObjectTypeHandler"/>
+        </constructor>
+    </resultMap>
+
+    <!-- Find user by email -->
+    <select id="findByEmail" resultType="com.smartrecruit.system.entity.SysUser">
+        SELECT * FROM sys_user
+        WHERE email = #{email}
+          AND deleted = 0
+        LIMIT 1
+    </select>
+
+    <!-- Find user by username -->
+    <select id="findByUsername" resultType="com.smartrecruit.system.entity.SysUser">
+        SELECT * FROM sys_user
+        WHERE username = #{username}
+          AND deleted = 0
+        LIMIT 1
+    </select>
+
+    <!-- Find user by mobile -->
+    <select id="findByMobile" resultType="com.smartrecruit.system.entity.SysUser">
+        SELECT * FROM sys_user
+        WHERE mobile = #{mobile}
+          AND deleted = 0
+        LIMIT 1
+    </select>
+
+    <!-- Page query users with department and role info -->
+    <select id="pageQuery" resultMap="UserVOMap">
+        SELECT
+            u.id,
+            u.username,
+            u.real_name,
+            u.email,
+            u.mobile,
+            u.avatar,
+            u.department_id AS dept_id,
+            d.dept_name AS department_name,
+            GROUP_CONCAT(DISTINCT r.role_name ORDER BY r.sort_order SEPARATOR ', ') AS role_name,
+            GROUP_CONCAT(DISTINCT r.id ORDER BY r.sort_order) AS role_ids,
+            u.status,
+            u.gender,
+            u.position,
+            u.job_level,
+            u.age,
+            u.last_login_time,
+            u.create_time,
+            NULL AS permissions
+        FROM sys_user u
+        LEFT JOIN sys_department d ON u.department_id = d.id AND d.deleted = 0
+        LEFT JOIN sys_user_role ur ON u.id = ur.user_id
+        LEFT JOIN sys_role r ON ur.role_id = r.id AND r.deleted = 0
+        <where>
+            u.deleted = 0
+            <if test="username != null and username != ''">
+                AND (u.username LIKE CONCAT('%', #{username}, '%')
+                     OR u.real_name LIKE CONCAT('%', #{username}, '%'))
+            </if>
+            <if test="email != null and email != ''">
+                AND u.email LIKE CONCAT('%', #{email}, '%')
+            </if>
+            <if test="userId != null">
+                AND u.id = #{userId}
+            </if>
+            <if test="status != null">
+                AND u.status = #{status}
+            </if>
+            <if test="deptId != null">
+                AND u.department_id = #{deptId}
+            </if>
+            <if test="roleIds != null and roleIds != ''">
+                AND FIND_IN_SET(ur.role_id, #{roleIds}) > 0
+            </if>
+        </where>
+        GROUP BY u.id
+        ORDER BY u.create_time DESC
+    </select>
+
+</mapper>

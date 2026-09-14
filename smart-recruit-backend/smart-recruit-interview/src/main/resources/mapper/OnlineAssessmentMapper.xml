@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartrecruit.interview.repository.OnlineAssessmentMapper">
+
+    <select id="selectPageWithFilters" resultType="com.smartrecruit.interview.entity.OnlineAssessment">
+        SELECT * FROM rec_online_assessment
+        <where>
+            deleted = 0
+            <if test="params.candidateId != null">
+                AND candidate_id = #{params.candidateId}
+            </if>
+            <if test="params.candidateName != null and params.candidateName != ''">
+                AND candidate_name LIKE CONCAT('%', #{params.candidateName}, '%')
+            </if>
+            <if test="params.candidateEmail != null and params.candidateEmail != ''">
+                AND candidate_email LIKE CONCAT('%', #{params.candidateEmail}, '%')
+            </if>
+            <if test="params.status != null and params.status != ''">
+                AND status = #{params.status}
+            </if>
+            <if test="params.type != null and params.type != ''">
+                AND type = #{params.type}
+            </if>
+            <if test="params.startDate != null and params.startDate != ''">
+                AND create_time &gt;= #{params.startDate}
+            </if>
+            <if test="params.endDate != null and params.endDate != ''">
+                AND create_time &lt;= CONCAT(#{params.endDate}, ' 23:59:59')
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+</mapper>

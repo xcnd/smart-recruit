@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartrecruit.referral.repository.RefBonusRecordMapper">
+
+    <select id="selectByRecordId" resultType="com.smartrecruit.referral.dto.response.BonusRecordVO">
+        SELECT id,
+               ref_record_id  AS refRecordId,
+               stage,
+               stage_name     AS stageName,
+               amount,
+               status,
+               paid_time      AS paidTime
+        FROM ref_bonus_record
+        WHERE ref_record_id = #{refRecordId}
+        ORDER BY stage ASC
+    </select>
+
+    <select id="selectByReferrerId" resultType="com.smartrecruit.referral.dto.response.BonusRecordVO">
+        SELECT id,
+               ref_record_id  AS refRecordId,
+               stage,
+               stage_name     AS stageName,
+               amount,
+               status,
+               paid_time      AS paidTime
+        FROM ref_bonus_record
+        WHERE referrer_id = #{referrerId}
+        ORDER BY ref_record_id, stage ASC
+    </select>
+
+</mapper>

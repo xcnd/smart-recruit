@@ -1,0 +1,54 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: smart-recruit-interview
+  datasource:
+    url: jdbc:mysql://localhost:3306/smart_recruit_interview?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: SmartRecruitHikariPool
+      minimum-idle: 5
+      maximum-pool-size: 20
+      connection-timeout: 60000
+      idle-timeout: 300000
+      max-lifetime: 1800000
+      connection-test-query: SELECT 1
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.smartrecruit.interview.entity
+  global-config:
+    db-config:
+      id-type: assign_id
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 大模型开关（LLM 调用已迁移至 smart-recruit-ai-engine 服务）
+ai:
+  llm:
+    enabled: false
+
+# AgentScope2 多智能体框架开关（需配合 ai-engine 模块的 agentscope.enabled=true 一起使用）
+agentscope:
+  enabled: true
+
+# JWT — 必须与 gateway/system 模块 secret 一致
+jwt:
+  secret: ${JWT_SECRET_KEY:c21hcnQtcmVjcnVpdC1zZWNyZXQta2V5LWZvci1qd3QtdG9rZW4tc2lnbmluZy0yNTY=}
+
+# 测评链接基础 URL（候选人在邮件中点击跳转的地址）
+smart-recruit:
+  assessment:
+    base-url: ${ASSESSMENT_BASE_URL:http://localhost:3000}
+
+logging:
+  level:
+    com.smartrecruit.interview: DEBUG
+    com.smartrecruit.interview.repository: DEBUG

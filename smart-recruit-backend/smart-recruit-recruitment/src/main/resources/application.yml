@@ -1,0 +1,83 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: smart-recruit-recruitment
+  profiles:
+    active: dev
+  servlet:
+    multipart:
+      max-file-size: 15MB
+      max-request-size: 20MB
+  cloud:
+    openfeign:
+      client:
+        config:
+          smart-recruit-system:
+            connect-timeout: 10000
+            read-timeout: 120000
+  datasource:
+    url: jdbc:mysql://localhost:3306/smart_recruit_recruitment?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: SmartRecruitHikariPool
+      minimum-idle: 5
+      maximum-pool-size: 20
+      connection-timeout: 60000
+      idle-timeout: 300000
+      max-lifetime: 1800000
+      connection-test-query: SELECT 1
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.smartrecruit.recruitment.entity
+  global-config:
+    db-config:
+      id-type: assign_id
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    cache-enabled: false
+
+# ─── 线程池配置（可覆盖，缺省使用代码内默认值） ───
+smart-recruit:
+  thread-pool:
+    ai-engine:
+      # 核心线程数
+      core-pool-size: 2
+      # 最大线程数
+      max-pool-size: 4
+      # 任务队列容量
+      queue-capacity: 100
+      # 非核心线程空闲存活时间（秒）
+      keep-alive-seconds: 120
+      # 关闭时等待任务完成的时间（秒）
+      await-termination-seconds: 120
+      # 线程名前缀
+      thread-name-prefix: ai-
+      # 拒绝策略：abort / caller-runs / discard / discard-oldest
+      rejection-policy: abort
+    resume-parse:
+      core-pool-size: 2
+      max-pool-size: 4
+      queue-capacity: 50
+      keep-alive-seconds: 120
+      await-termination-seconds: 60
+      thread-name-prefix: resume-parse-
+      rejection-policy: caller-runs
+
+# ─── 文件存储（通过 Feign 委托给 smart-recruit-system 服务） ───
+file:
+  storage:
+    type: rustfs
+
+logging:
+  level:
+    com.smartrecruit.recruitment: DEBUG
+    com.baomidou.mybatisplus: DEBUG

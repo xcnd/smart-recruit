@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartrecruit.talent.repository.TalentPoolMapper">
+
+    <select id="selectPageWithFilters" resultType="com.smartrecruit.talent.entity.TalentPool">
+        SELECT * FROM rec_talent_pool
+        <where>
+            deleted = 0
+            <if test="params.poolType != null">
+                AND pool_type = #{params.poolType}
+            </if>
+            <if test="params.skillLevel != null">
+                AND skill_level = #{params.skillLevel}
+            </if>
+            <if test="params.availability != null">
+                AND availability = #{params.availability}
+            </if>
+            <if test="params.keyword != null and params.keyword != ''">
+                AND (
+                    expected_position LIKE CONCAT('%', #{params.keyword}, '%')
+                    OR JSON_SEARCH(tags, 'one', CONCAT('%', #{params.keyword}, '%')) IS NOT NULL
+                )
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="searchByKeyword" resultType="com.smartrecruit.talent.entity.TalentPool">
+        SELECT * FROM rec_talent_pool
+        <where>
+            deleted = 0
+            AND (
+                expected_position LIKE CONCAT('%', #{keyword}, '%')
+                OR JSON_SEARCH(tags, 'one', CONCAT('%', #{keyword}, '%')) IS NOT NULL
+            )
+        </where>
+        ORDER BY
+            CASE
+                WHEN skill_level = 3 THEN 1
+                WHEN skill_level = 2 THEN 2
+                WHEN skill_level = 1 THEN 3
+                ELSE 4
+            END,
+            create_time DESC
+        LIMIT 50
+    </select>
+
+</mapper>
