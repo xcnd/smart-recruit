@@ -62,7 +62,8 @@ public class LlmFacadeServiceImpl implements LlmFacadeService {
                 : null;
         try {
             Map<String, Object> result = llmGatewayService.chat(
-                    request.getSystemPrompt(), request.getUserPrompt(), agentId);
+                    request.getSystemPrompt(), request.getUserPrompt(), agentId,
+                    request.getResumeId());
             long elapsed = DateUtils.currentEpochMillis() - start;
             log.info("[LLM 服务] 响应完成: agentId={}, elapsed={}ms, resultKeys={}, resultSize={}",
                     agentId, elapsed, result.keySet(),

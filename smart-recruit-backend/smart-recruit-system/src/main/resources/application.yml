@@ -79,7 +79,7 @@ mybatis-plus:
 
 # JWT Configuration — must match gateway's smart-recruit.jwt.secret-key
 jwt:
-  secret: ${JWT_SECRET_KEY:c21hcnQtcmVjcnVpdC1zZWNyZXQta2V5LWZvci1qd3QtdG9rZW4tc2lnbmluZy0yNTY=}
+  secret: ${JWT_SECRET_KEY}
 
 # ================================================================
 # RustFS — S3 兼容对象存储（头像、文件上传）
@@ -90,8 +90,8 @@ file:
     rustfs:
       endpoint: 117.72.88.11
       port: 9091
-      access-key: IPL4GZeFumv8g9ANj3b7
-      secret-key: IFil9yzO520VLE8f7qoXHgBNkUG4TmWvDrSc1ReQ
+      access-key: ${RUSTFS_ACCESS_KEY}
+      secret-key: ${RUSTFS_SECRET_KEY}
       secure: false
       bucket-name: smart-recruit-dev
       connect-timeout: 30000

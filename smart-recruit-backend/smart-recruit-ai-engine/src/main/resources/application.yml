@@ -65,17 +65,17 @@ ai:
         models:
           - deepseek-chat
           - deepseek-reasoner
-          - deepseek-v4
+          - deepseek-v4-pro
           - deepseek-v4-flash
     # 按 Agent 的模型路由：调用方传入 Agent ID 时优先使用对应模型
     routing:
-      orchestrator: deepseek-v4
+      orchestrator: deepseek-v4-pro
       resume-parser: qwen-vl-max
       resume-parser-image: qwen-vl-max
       smart-screener: qwen3-max
       jd-generator: qwen3-max
       interview-question: qwen3-max
-      interview-evaluator: deepseek-v4
+      interview-evaluator: deepseek-v4-pro
       referral-matcher: deepseek-chat
       talent-recommender: deepseek-chat
       offer-predictor: deepseek-v4-flash

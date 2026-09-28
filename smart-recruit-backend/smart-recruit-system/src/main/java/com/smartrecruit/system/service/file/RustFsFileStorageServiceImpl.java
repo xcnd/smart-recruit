@@ -2,6 +2,7 @@ package com.smartrecruit.system.service.file;
 
 import com.smartrecruit.common.constant.ConfigKeys;
 import com.smartrecruit.common.exception.ResourceNotFoundException;
+import com.smartrecruit.common.exception.ValidationException;
 import com.smartrecruit.system.config.FileStorageProperties;
 import com.smartrecruit.system.service.SysConfigService;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,7 @@ public class RustFsFileStorageServiceImpl implements FileStorageService {
     @Override
     public String upload(MultipartFile file, String relativePath) {
         if (file.isEmpty()) {
-            throw new IllegalArgumentException("文件不能为空");
+            throw new ValidationException("文件不能为空");
         }
         try {
             return upload(file.getBytes(), file.getOriginalFilename(),
@@ -61,7 +62,7 @@ public class RustFsFileStorageServiceImpl implements FileStorageService {
     @Override
     public String upload(byte[] fileBytes, String fileName, String contentType, String relativePath) {
         if (fileBytes == null || fileBytes.length == 0) {
-            throw new IllegalArgumentException("文件不能为空");
+            throw new ValidationException("文件不能为空");
         }
         validateFile(fileBytes.length, fileName);
 
@@ -92,12 +93,17 @@ public class RustFsFileStorageServiceImpl implements FileStorageService {
 
     /**
      * 按系统配置校验文件大小与扩展名（配置修改后立即生效）。
+     *
+     * <p>校验失败抛 {@link ValidationException} 而非 {@link IllegalArgumentException}：
+     * 后者不继承 BusinessException，会被全局兜底 handler 替换成「发生了未预期的错误」，
+     * 调用方看不到真实原因（超限多少、允许哪些类型）。</p>
      */
     private void validateFile(long size, String fileName) {
         int maxSizeMb = sysConfigService.getInt(ConfigKeys.UPLOAD_MAX_SIZE_MB, 10);
         long maxSizeBytes = (long) maxSizeMb * 1024 * 1024;
         if (size > maxSizeBytes) {
-            throw new IllegalArgumentException("文件大小不能超过 " + maxSizeMb + " MB");
+            throw new ValidationException(String.format(
+                    "文件大小 %.1f MB 超过上限 %d MB", size / 1024.0 / 1024.0, maxSizeMb));
         }
 
         List<String> allowedExtensions =
@@ -111,7 +117,7 @@ public class RustFsFileStorageServiceImpl implements FileStorageService {
                 .map(ext -> ext.toLowerCase(Locale.ROOT))
                 .anyMatch(lowerName::endsWith);
         if (!allowed) {
-            throw new IllegalArgumentException("不支持的文件类型：" + fileName
+            throw new ValidationException("不支持的文件类型：" + fileName
                     + "，允许的类型：" + String.join(", ", allowedExtensions));
         }
     }

@@ -272,7 +272,7 @@ public class ResumeToOfferPipeline {
     /**
      * 真实 AI 面试评估：AgentScope2 HarnessAgent 优先，LLM 网关兜底。
      *
-     * <p>两者都走 interview-evaluator 路由模型（如 deepseek-v4），
+     * <p>两者都走 interview-evaluator 路由模型（如 deepseek-v4-pro），
      * 并计入 Token 消耗与 Agent 任务/事件。</p>
      */
     private InterviewReport evaluateWithAi(String candidateName, String jobTitle,

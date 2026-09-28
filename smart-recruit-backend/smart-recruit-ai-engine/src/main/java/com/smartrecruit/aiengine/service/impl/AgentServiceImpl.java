@@ -170,7 +170,7 @@ public class AgentServiceImpl implements AgentService {
         info.setAgentId(agentId);
         info.setAgentName(toClassName(displayName));
         info.setDisplayName(displayName);
-        info.setModel(model == null || model.isBlank() ? "deepseek-v4" : model);
+        info.setModel(model == null || model.isBlank() ? "deepseek-v4-pro" : model);
         info.setDescription(description);
         info.setType(type);
         info.setStatus(STATUS_RUNNING);

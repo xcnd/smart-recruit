@@ -180,7 +180,7 @@ public class InterviewEvaluatorAgentV2 {
 
             try {
                 // 取模型原始文本（可能为工具调用/自由文本），避免 JSON 解析破坏编排链路
-                // 面试评估走 interview-evaluator 的路由模型（如 deepseek-v4）
+                // 面试评估走 interview-evaluator 的路由模型（如 deepseek-v4-pro）
                 String textContent = gateway.chatRaw(systemPrompt, userPrompt, "interview-evaluator");
 
                 ChatResponse response = ChatResponse.builder()

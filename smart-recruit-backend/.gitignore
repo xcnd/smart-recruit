@@ -60,9 +60,18 @@ application-local.yml
 application-dev.yml
 application-prod.yml
 
+# Local environment variables (API keys, passwords) — never commit
+.env
+.env.local
+.env.*.local
+
 # Upload files
 uploads/
 data/
+
+# Python benchmark tooling
+__pycache__/
+*.pyc
 
 # Temporary files
 *.tmp

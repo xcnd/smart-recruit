@@ -41,7 +41,7 @@ agentscope:
 
 # JWT — 必须与 gateway/system 模块 secret 一致
 jwt:
-  secret: ${JWT_SECRET_KEY:c21hcnQtcmVjcnVpdC1zZWNyZXQta2V5LWZvci1qd3QtdG9rZW4tc2lnbmluZy0yNTY=}
+  secret: ${JWT_SECRET_KEY}
 
 # 测评链接基础 URL（候选人在邮件中点击跳转的地址）
 smart-recruit:

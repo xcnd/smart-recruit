@@ -1,6 +1,7 @@
 package com.smartrecruit.recruitment.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.smartrecruit.recruitment.domain.ParsedResume;
 import com.smartrecruit.recruitment.entity.Candidate;
 import com.smartrecruit.recruitment.entity.Resume;
@@ -102,9 +103,19 @@ public class ResumeParseServiceImpl implements ResumeParseService {
             return;
         }
 
-        // 步骤1: 设置解析中状态
+        // 步骤1: 原子认领 —— 上传事务回调与 ResumeParseTask 都会触发本方法，
+        // 用条件更新保证同一份简历只有一个调用方能把 PENDING 推进到 PARSING，
+        // 否则重复调用会各自跑完整条流水线（含真实 LLM 请求）。
+        int claimed = resumeMapper.update(null, new LambdaUpdateWrapper<Resume>()
+                .eq(Resume::getId, resumeId)
+                .eq(Resume::getParseStatus, RecruitmentEnums.ParseStatus.PENDING.getCode())
+                .set(Resume::getParseStatus, RecruitmentEnums.ParseStatus.PARSING.getCode()));
+        if (claimed == 0) {
+            log.info("跳过重复解析（已被其他调用方认领）: resumeId={}, thread={}",
+                    resumeId, Thread.currentThread().getName());
+            return;
+        }
         resume.setParseStatus(RecruitmentEnums.ParseStatus.PARSING.getCode());
-        resumeMapper.updateById(resume);
 
         try {
             // 步骤2: 文本提取
@@ -151,12 +162,21 @@ public class ResumeParseServiceImpl implements ResumeParseService {
                             "图片/扫描件简历 AI 解析失败，无法识别内容，请人工复核或重新上传");
                 }
             } else {
-                structured = resumeStructurerService.structure(rawText);
+                structured = resumeStructurerService.structure(rawText, resumeId);
             }
             log.info("[计时] 步骤3完成-结构化提取: resumeId={}, 姓名={}, 教育{}条, 经历{}条, 技能{}个, 耗时 {}ms",
                     resumeId, structured.getName(), structured.getEducation().size(),
                     structured.getExperience().size(), structured.getSkills().size(),
                     DateUtils.currentEpochMillis() - step3Start);
+
+            // 步骤3.5: 空结果视为解析失败。
+            // 空白页、乱码、解析器不支持的格式都会走到这里产出空壳结构；若直接标记成功，
+            // 用户看到的是「解析成功」但内容全空的简历，且不会进入人工复核队列。
+            if (isEmptyStructured(structured)) {
+                throw new IllegalStateException(
+                        "结构化提取结果为空（姓名/邮箱/电话/技能/教育/经历均未识别到），"
+                                + "简历可能是空白页、乱码或不受支持的格式，请人工复核或重新上传");
+            }
 
             // 步骤4: 使用解析数据丰富 Candidate（含去重逻辑）
             long step4Start = DateUtils.currentEpochMillis();
@@ -483,6 +503,24 @@ public class ResumeParseServiceImpl implements ResumeParseService {
         return s != null && !s.isEmpty();
     }
 
+    /**
+     * 结构化结果是否为空 —— 所有关键字段都没抽出内容。
+     *
+     * <p>空白页、乱码、解析器不支持的格式都会得到这样的空壳结构，
+     * 不能当作解析成功（见步骤 3.5）。</p>
+     */
+    private boolean isEmptyStructured(ParsedResume s) {
+        return !isNotEmpty(s.getName())
+                && !isNotEmpty(s.getEmail())
+                && !isNotEmpty(s.getPhone())
+                && !isNotEmpty(s.getSkillsText())
+                && !isNotEmpty(s.getSummary())
+                && s.getEducation().isEmpty()
+                && s.getExperience().isEmpty()
+                && s.getProjects().isEmpty()
+                && s.getSkills().isEmpty();
+    }
+
     private boolean isPlaceholderCandidate(Candidate candidate) {
         return "待解析".equals(candidate.getName())
                 || (candidate.getEmail() != null
@@ -662,8 +700,8 @@ public class ResumeParseServiceImpl implements ResumeParseService {
             // 图片/扫描件：AI 视觉解析（失败会抛出带原因的异常）
             parsed = parseImageWithAi(fileBytes, fileName, null);
         } else {
-            // 文本型：本地规则 + AI 增强结构化
-            parsed = resumeStructurerService.structure(rawText);
+            // 文本型：本地规则 + AI 增强结构化（编排链路无简历记录，无法归属解析日志）
+            parsed = resumeStructurerService.structure(rawText, null);
         }
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("rawText", rawText);
@@ -701,9 +739,13 @@ public class ResumeParseServiceImpl implements ResumeParseService {
             if (dataUrls == null || dataUrls.isEmpty()) {
                 throw new IllegalStateException("图片/PDF 转码失败，无法生成可识别的图片");
             }
-            Map<String, Object> request = Map.of(
-                    "fileName", fileName == null ? "resume" : fileName,
-                    "base64Images", dataUrls);
+            // 用可变 Map 而非 Map.of：编排链路无简历记录，resumeId 为 null 时不能入参
+            Map<String, Object> request = new LinkedHashMap<>();
+            request.put("fileName", fileName == null ? "resume" : fileName);
+            request.put("base64Images", dataUrls);
+            if (resumeId != null) {
+                request.put("resumeId", resumeId);
+            }
             var response = aiAgentCapabilityClient.parseResumeImage(request);
             if (response == null) {
                 throw new IllegalStateException("AI 引擎无响应");

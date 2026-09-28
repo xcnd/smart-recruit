@@ -6,6 +6,7 @@ import com.smartrecruit.aiengine.config.LlmProperties;
 import com.smartrecruit.aiengine.config.LlmProperties.ProviderConfig;
 import com.smartrecruit.aiengine.service.AgentTaskRecorder;
 import com.smartrecruit.aiengine.service.LlmGatewayService;
+import com.smartrecruit.aiengine.service.ResumeParseLogRecorder;
 import com.smartrecruit.common.util.DateUtils;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.Content;
@@ -41,9 +42,13 @@ import java.util.regex.Pattern;
 @ConditionalOnProperty(name = "ai.llm.enabled", havingValue = "true")
 public class LlmGatewayServiceImpl implements LlmGatewayService {
 
+    /** 简历解析 Agent：仅该 Agent 的调用写入解析日志。 */
+    private static final String PARSE_AGENT_ID = "resume-parser";
+
     private final LlmProperties llmProperties;
     private final ObjectMapper objectMapper;
     private final AgentTaskRecorder taskRecorder;
+    private final ResumeParseLogRecorder resumeParseLogRecorder;
     private final Map<String, ChatLanguageModel> modelCache = new ConcurrentHashMap<>();
 
     private static final Pattern JSON_BLOCK = Pattern.compile(
@@ -51,10 +56,12 @@ public class LlmGatewayServiceImpl implements LlmGatewayService {
     private static final Pattern BRACE_JSON = Pattern.compile("\\{[\\s\\S]*\\}");
 
     public LlmGatewayServiceImpl(LlmProperties llmProperties, ObjectMapper objectMapper,
-                                 AgentTaskRecorder taskRecorder) {
+                                 AgentTaskRecorder taskRecorder,
+                                 ResumeParseLogRecorder resumeParseLogRecorder) {
         this.llmProperties = llmProperties;
         this.objectMapper = objectMapper;
         this.taskRecorder = taskRecorder;
+        this.resumeParseLogRecorder = resumeParseLogRecorder;
     }
 
     /**
@@ -73,6 +80,18 @@ public class LlmGatewayServiceImpl implements LlmGatewayService {
      */
     @Override
     public Map<String, Object> chat(String systemPrompt, String userPrompt, String agentId) {
+        return chat(systemPrompt, userPrompt, agentId, null);
+    }
+
+    /**
+     * 发起一次 LLM 对话，按 Agent 路由模型，并记录简历解析调用日志。
+     *
+     * @param resumeId 归属的简历 ID；当 Agent 为 {@code resume-parser} 时写入
+     *                 {@code ai_resume_parse_log}，为 {@code null} 时不记录
+     */
+    @Override
+    public Map<String, Object> chat(String systemPrompt, String userPrompt, String agentId,
+                                    Long resumeId) {
         long start = DateUtils.currentEpochMillis();
         log.info("[LLM网关] 收到请求: agentId={}, systemPrompt长度={}, userPrompt长度={}",
                 agentId,
@@ -83,7 +102,9 @@ public class LlmGatewayServiceImpl implements LlmGatewayService {
             throw new IllegalStateException("未配置任何 LLM 提供商");
         }
         RuntimeException lastError = null;
+        ModelTarget lastTarget = null;
         for (ModelTarget target : chain) {
+            lastTarget = target;
             try {
                 LlmCallResult result = callProviderRaw(
                         target.config, target.modelName, systemPrompt, userPrompt);
@@ -91,6 +112,8 @@ public class LlmGatewayServiceImpl implements LlmGatewayService {
                         agentId, target.modelName, DateUtils.currentEpochMillis() - start);
                 Map<String, Object> parsed = parseResponse(result.text(), target.modelName);
                 recordTokenIfNeeded(agentId, target.modelName, result.totalTokens());
+                recordParseLogIfNeeded(agentId, resumeId, target,
+                        result.inputTokens(), result.outputTokens(), result.durationMs(), null);
                 return parsed;
             } catch (Exception ex) {
                 lastError = new RuntimeException(
@@ -98,6 +121,12 @@ public class LlmGatewayServiceImpl implements LlmGatewayService {
                 log.warn("LLM 提供商调用失败，尝试下一个: agentId={}, model={}, error={}",
                         agentId, target.modelName, ex.getMessage());
             }
+        }
+        // 整条链路失败只记一条日志，避免每个提供商各记一条重复记录
+        if (lastTarget != null) {
+            recordParseLogIfNeeded(agentId, resumeId, lastTarget, 0, 0,
+                    DateUtils.currentEpochMillis() - start,
+                    lastError != null ? lastError.getMessage() : "所有 LLM 提供商均调用失败");
         }
         throw new RuntimeException("所有 LLM 提供商均调用失败", lastError);
     }
@@ -159,6 +188,19 @@ public class LlmGatewayServiceImpl implements LlmGatewayService {
     public Map<String, Object> chatWithImage(String systemPrompt, String textPrompt,
                                              List<String> base64Images, String agentId,
                                              String routingAgentId) {
+        return chatWithImage(systemPrompt, textPrompt, base64Images, agentId, routingAgentId, null);
+    }
+
+    /**
+     * 发起一次多模态（图片）LLM 对话，并按需记录简历解析调用日志。
+     *
+     * @param resumeId 归属的简历 ID；当 Agent 为 {@code resume-parser} 时写入
+     *                 {@code ai_resume_parse_log}，为 {@code null} 时不记录
+     */
+    @Override
+    public Map<String, Object> chatWithImage(String systemPrompt, String textPrompt,
+                                             List<String> base64Images, String agentId,
+                                             String routingAgentId, Long resumeId) {
         long start = DateUtils.currentEpochMillis();
         log.info("[LLM网关] 收到多模态图片请求: agentId={}, routingAgentId={}, imageCount={}",
                 agentId, routingAgentId, base64Images != null ? base64Images.size() : 0);
@@ -170,7 +212,9 @@ public class LlmGatewayServiceImpl implements LlmGatewayService {
             throw new IllegalStateException("未配置可用的视觉 LLM 提供商");
         }
         RuntimeException lastError = null;
+        ModelTarget lastTarget = null;
         for (ModelTarget target : chain) {
+            lastTarget = target;
             try {
                 LlmCallResult result = callProviderRawWithImage(
                         target.config, target.modelName, systemPrompt, textPrompt, base64Images);
@@ -179,6 +223,8 @@ public class LlmGatewayServiceImpl implements LlmGatewayService {
                 Map<String, Object> parsed = parseResponse(result.text(), target.modelName);
                 // Token 计入统计归属的 Agent（如 resume-parser），模型按路由 Agent 选择
                 recordTokenIfNeeded(agentId, target.modelName, result.totalTokens());
+                recordParseLogIfNeeded(agentId, resumeId, target,
+                        result.inputTokens(), result.outputTokens(), result.durationMs(), null);
                 return parsed;
             } catch (Exception ex) {
                 lastError = new RuntimeException(
@@ -186,6 +232,12 @@ public class LlmGatewayServiceImpl implements LlmGatewayService {
                 log.warn("视觉 LLM 提供商调用失败: agentId={}, model={}, error={}",
                         agentId, target.modelName, ex.getMessage());
             }
+        }
+        // 整条链路失败只记一条日志，避免每个提供商各记一条重复记录
+        if (lastTarget != null) {
+            recordParseLogIfNeeded(agentId, resumeId, lastTarget, 0, 0,
+                    DateUtils.currentEpochMillis() - start,
+                    lastError != null ? lastError.getMessage() : "所有视觉 LLM 提供商均调用失败");
         }
         throw new RuntimeException("所有视觉 LLM 提供商均调用失败", lastError);
     }
@@ -207,11 +259,12 @@ public class LlmGatewayServiceImpl implements LlmGatewayService {
                 SystemMessage.from(systemPrompt),
                 UserMessage.from(userPrompt));
         String rawResponse = response.content().text();
-        int totalTokens = 0;
         TokenUsage usage = response.tokenUsage();
-        if (usage != null && usage.totalTokenCount() != null) {
-            totalTokens = usage.totalTokenCount();
-        } else {
+        int inputTokens = usage != null && usage.inputTokenCount() != null ? usage.inputTokenCount() : 0;
+        int outputTokens = usage != null && usage.outputTokenCount() != null ? usage.outputTokenCount() : 0;
+        int totalTokens = usage != null && usage.totalTokenCount() != null
+                ? usage.totalTokenCount() : inputTokens + outputTokens;
+        if (usage == null || usage.totalTokenCount() == null) {
             log.warn("[LLM调用] 模型响应未返回 token 用量，本次调用无法计入 Token 统计: model={}",
                     modelName);
         }
@@ -220,7 +273,7 @@ public class LlmGatewayServiceImpl implements LlmGatewayService {
         log.info("[LLM调用] 完成: model={}, elapsed={}ms, rawResponseLength={}, rawResponsePreview={}",
                 modelName, elapsed, rawResponse != null ? rawResponse.length() : 0,
                 truncate(rawResponse, 500));
-        return new LlmCallResult(rawResponse, totalTokens);
+        return new LlmCallResult(rawResponse, inputTokens, outputTokens, totalTokens, elapsed);
     }
 
     /**
@@ -242,11 +295,12 @@ public class LlmGatewayServiceImpl implements LlmGatewayService {
                 SystemMessage.from(systemPrompt),
                 UserMessage.from(textPrompt, List.of((Content[]) images)));
         String rawResponse = response.content().text();
-        int totalTokens = 0;
         TokenUsage usage = response.tokenUsage();
-        if (usage != null && usage.totalTokenCount() != null) {
-            totalTokens = usage.totalTokenCount();
-        } else {
+        int inputTokens = usage != null && usage.inputTokenCount() != null ? usage.inputTokenCount() : 0;
+        int outputTokens = usage != null && usage.outputTokenCount() != null ? usage.outputTokenCount() : 0;
+        int totalTokens = usage != null && usage.totalTokenCount() != null
+                ? usage.totalTokenCount() : inputTokens + outputTokens;
+        if (usage == null || usage.totalTokenCount() == null) {
             log.warn("[LLM调用] 模型响应未返回 token 用量，本次调用无法计入 Token 统计: model={}",
                     modelName);
         }
@@ -254,7 +308,7 @@ public class LlmGatewayServiceImpl implements LlmGatewayService {
         long elapsed = DateUtils.currentEpochMillis() - start;
         log.info("[LLM调用] 完成(多模态): model={}, elapsed={}ms, rawResponseLength={}",
                 modelName, elapsed, rawResponse != null ? rawResponse.length() : 0);
-        return new LlmCallResult(rawResponse, totalTokens);
+        return new LlmCallResult(rawResponse, inputTokens, outputTokens, totalTokens, elapsed);
     }
 
     /**
@@ -273,6 +327,28 @@ public class LlmGatewayServiceImpl implements LlmGatewayService {
 
     private ChatLanguageModel getOrCreateModel(ProviderConfig config) {
         return getOrCreateModel(config, config.getModel());
+    }
+
+    /**
+     * 记录简历解析调用日志（仅当调用方传入了简历 ID 且 Agent 为 {@code resume-parser}）。
+     */
+    private void recordParseLogIfNeeded(String agentId, Long resumeId, ModelTarget target,
+                                        int inputTokens, int outputTokens, long durationMs,
+                                        String errorMsg) {
+        if (resumeId == null || !PARSE_AGENT_ID.equals(agentId)) {
+            return;
+        }
+        resumeParseLogRecorder.record(resumeId, resolveEngineName(target.config), target.modelName,
+                inputTokens, outputTokens, durationMs, errorMsg == null, errorMsg);
+    }
+
+    /** 反查提供商配置对应的厂商代号（如 qwen、deepseek）。 */
+    private String resolveEngineName(ProviderConfig config) {
+        return llmProperties.getProviders().entrySet().stream()
+                .filter(entry -> entry.getValue() == config)
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse(llmProperties.getPrimary());
     }
 
     private ChatLanguageModel getOrCreateModel(ProviderConfig config, String modelName) {
@@ -361,8 +437,9 @@ public class LlmGatewayServiceImpl implements LlmGatewayService {
     private record ModelTarget(ProviderConfig config, String modelName) {
     }
 
-    /** 模型调用结果：原始文本 + 真实 Token 消耗。 */
-    private record LlmCallResult(String text, int totalTokens) {
+    /** 模型调用结果：原始文本 + 真实 Token 消耗（含输入/输出拆分）+ 本次调用耗时。 */
+    private record LlmCallResult(String text, int inputTokens, int outputTokens,
+                                 int totalTokens, long durationMs) {
     }
 
     private Map<String, Object> parseResponse(String raw, String model) {

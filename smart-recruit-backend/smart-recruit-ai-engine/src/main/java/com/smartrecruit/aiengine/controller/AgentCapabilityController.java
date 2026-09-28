@@ -74,7 +74,7 @@ public class AgentCapabilityController {
 
     public record ParseRequest(String fileName, String contentText) {}
 
-    public record ParseImageRequest(String fileName, List<String> base64Images) {}
+    public record ParseImageRequest(String fileName, List<String> base64Images, Long resumeId) {}
 
     public record ScreenRequest(CandidateProfile candidate, JobRequirement requirement) {}
 
@@ -199,7 +199,8 @@ public class AgentCapabilityController {
     @PostMapping("/resume/parse-image")
     public ApiResponse<ResumeImageParseVO> parseResumeImage(@RequestBody ParseImageRequest request) {
         return execute("resume-parser", AiEnums.TaskType.RESUME_PARSE.getCode(), request,
-                () -> capabilityService.parseResumeImage(request.fileName(), request.base64Images()));
+                () -> capabilityService.parseResumeImage(request.fileName(), request.base64Images(),
+                        request.resumeId()));
     }
 
     /**

@@ -213,8 +213,9 @@ public class AgentCapabilityServiceImpl implements AgentCapabilityService {
      * 解析图片/扫描件简历：AI 视觉模型优先，识别不完整时标记需人工复核。
      */
     @Override
-    public ResumeImageParseVO parseResumeImage(String fileName, List<String> base64Images) {
-        Map<String, Object> llm = tryLlmImage(fileName, base64Images);
+    public ResumeImageParseVO parseResumeImage(String fileName, List<String> base64Images,
+                                               Long resumeId) {
+        Map<String, Object> llm = tryLlmImage(fileName, base64Images, resumeId);
         if (llm != null && toStr(llm.get("name")) != null && !toStr(llm.get("name")).isBlank()) {
             List<String> skills = llm.get("skills") instanceof List<?> list
                     ? list.stream().map(String::valueOf).toList()
@@ -307,7 +308,8 @@ public class AgentCapabilityServiceImpl implements AgentCapabilityService {
     }
 
     /** 调用 AI 视觉模型解析图片简历（支持 PDF 多页渲染的多图输入）。 */
-    private Map<String, Object> tryLlmImage(String fileName, List<String> base64Images) {
+    private Map<String, Object> tryLlmImage(String fileName, List<String> base64Images,
+                                            Long resumeId) {
         LlmGatewayService llm = llmGatewayProvider.getIfAvailable();
         if (llm == null) {
             return null;
@@ -350,7 +352,7 @@ public class AgentCapabilityServiceImpl implements AgentCapabilityService {
                     + " 页图片，请识别并提取以上简历信息。";
             Map<String, Object> result = llm.chatWithImage(
                     systemPrompt, textPrompt, base64Images,
-                    "resume-parser", "resume-parser-image");
+                    "resume-parser", "resume-parser-image", resumeId);
             return result == null || result.isEmpty() ? null : result;
         } catch (Exception e) {
             log.warn("图片简历 AI 解析失败，标记需人工复核: fileName={}, error={}",

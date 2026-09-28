@@ -121,6 +121,6 @@ smart-recruit:
     datacenter-id: 1
   security:
     jwt:
-      secret: ${JWT_SECRET:smart-recruit-default-secret-key-change-in-production}
+      secret: ${JWT_SECRET_KEY}
       expiration: 86400000  # 24 hours
       refresh-expiration: 604800000  # 7 days

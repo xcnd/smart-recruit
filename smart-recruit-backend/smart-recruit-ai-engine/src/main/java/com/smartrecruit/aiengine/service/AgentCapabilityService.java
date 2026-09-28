@@ -46,9 +46,10 @@ public interface AgentCapabilityService {
      *
      * @param fileName   文件名
      * @param base64Images 图片列表（每项为 base64 Data URL；PDF 多页渲染时传多张）
+     * @param resumeId   归属的简历 ID，用于写入解析日志，可为 {@code null}
      * @return 解析结果；识别不完整时 {@code reviewRequired=true}
      */
-    ResumeImageParseVO parseResumeImage(String fileName, List<String> base64Images);
+    ResumeImageParseVO parseResumeImage(String fileName, List<String> base64Images, Long resumeId);
 
     /** 人岗匹配评分。 */
     ScreenResultVO screenCandidate(CandidateProfile candidate, JobRequirement requirement);

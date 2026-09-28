@@ -169,7 +169,7 @@ spring:
 # =============================================================================
 smart-recruit:
   jwt:
-    secret-key: ${JWT_SECRET_KEY:c21hcnQtcmVjcnVpdC1zZWNyZXQta2V5LWZvci1qd3QtdG9rZW4tc2lnbmluZy0yNTY=}
+    secret-key: ${JWT_SECRET_KEY}
 
   gateway:
     rate-limit:

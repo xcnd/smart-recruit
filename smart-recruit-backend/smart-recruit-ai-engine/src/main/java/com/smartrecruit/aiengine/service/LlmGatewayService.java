@@ -29,6 +29,18 @@ public interface LlmGatewayService {
     Map<String, Object> chat(String systemPrompt, String userPrompt, String agentId);
 
     /**
+     * 发起一次 LLM 对话，按 Agent 路由模型，并记录简历解析调用日志。
+     *
+     * @param systemPrompt 系统提示词
+     * @param userPrompt   用户提示词
+     * @param agentId      Agent ID（如 resume-parser），可为 {@code null}
+     * @param resumeId     归属的简历 ID；Agent 为 resume-parser 时写入
+     *                     {@code ai_resume_parse_log}，为 {@code null} 时不记录
+     * @return 解析后的 JSON 响应（Map）
+     */
+    Map<String, Object> chat(String systemPrompt, String userPrompt, String agentId, Long resumeId);
+
+    /**
      * 发起一次 LLM 对话并返回模型原始输出文本（不做 JSON 解析）。
      *
      * <p>供 AgentScope2 等编排框架使用：模型可能返回工具调用、Markdown 或
@@ -62,4 +74,14 @@ public interface LlmGatewayService {
      */
     Map<String, Object> chatWithImage(String systemPrompt, String textPrompt,
                                       List<String> base64Images, String agentId, String routingAgentId);
+
+    /**
+     * 发起一次多模态（图片）LLM 对话，按 Agent 路由视觉模型，并记录简历解析调用日志。
+     *
+     * @param resumeId 归属的简历 ID；Agent 为 resume-parser 时写入
+     *                 {@code ai_resume_parse_log}，为 {@code null} 时不记录
+     */
+    Map<String, Object> chatWithImage(String systemPrompt, String textPrompt,
+                                      List<String> base64Images, String agentId,
+                                      String routingAgentId, Long resumeId);
 }

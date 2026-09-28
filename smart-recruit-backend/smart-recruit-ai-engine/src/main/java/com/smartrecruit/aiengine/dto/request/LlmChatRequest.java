@@ -17,4 +17,6 @@ public class LlmChatRequest {
     private String userPrompt;
     /** 可选：Agent ID（如 offer-predictor），网关按 Agent 路由模型。 */
     private String agentId;
+    /** 可选：归属的简历 ID，简历解析调用时用于写入解析日志。 */
+    private Long resumeId;
 }

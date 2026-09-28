@@ -45,7 +45,7 @@ public class ResumeStructurerServiceImpl implements ResumeStructurerService {
 
     /** 将解析文本结构化为标准简历模型。 */
     @Override
-    public ParsedResume structure(String rawText) {
+    public ParsedResume structure(String rawText, Long resumeId) {
         if (rawText == null || rawText.isBlank()) {
             log.warn("传入空文本，无法进行结构化提取");
             return defaultResult();
@@ -73,7 +73,7 @@ public class ResumeStructurerServiceImpl implements ResumeStructurerService {
         if (shouldUseLLM()) {
             try {
                 long llmStart = DateUtils.currentEpochMillis();
-                Map<String, Object> llmResult = structureWithLLM(text);
+                Map<String, Object> llmResult = structureWithLLM(text, resumeId);
                 log.info("[计时] 大模型增强完成: 耗时 {}ms", DateUtils.currentEpochMillis() - llmStart);
                 result = mergeResult(result, llmResult);
                 log.info("大模型增强完成，已合并结果");
@@ -93,13 +93,14 @@ public class ResumeStructurerServiceImpl implements ResumeStructurerService {
 
     // ─── LLM 调用 ───
 
-    private Map<String, Object> structureWithLLM(String text) {
+    private Map<String, Object> structureWithLLM(String text, Long resumeId) {
         String systemPrompt =
                 "You are a professional resume parser. Respond ONLY with valid JSON, no markdown, no explanation.";
         String userPrompt = buildPrompt(text);
 
         // 统一走 AI 引擎 LLM 网关，按 resume-parser 路由模型并统计 Token
-        return aiAgentLlmClient.chat(new LlmChatRequest(systemPrompt, userPrompt, "resume-parser"));
+        return aiAgentLlmClient.chat(
+                new LlmChatRequest(systemPrompt, userPrompt, "resume-parser", resumeId));
     }
 
     private String buildPrompt(String resumeText) {

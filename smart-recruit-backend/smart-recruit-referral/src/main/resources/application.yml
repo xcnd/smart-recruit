@@ -37,7 +37,7 @@ mybatis-plus:
 
 # JWT Configuration — must match gateway's smart-recruit.jwt.secret-key
 jwt:
-  secret: ${JWT_SECRET_KEY:c21hcnQtcmVjcnVpdC1zZWNyZXQta2V5LWZvci1qd3QtdG9rZW4tc2lnbmluZy0yNTY=}
+  secret: ${JWT_SECRET_KEY}
 
 logging:
   level:

@@ -37,7 +37,7 @@ logging:
 
 # JWT Configuration
 jwt:
-  secret: ${JWT_SECRET_KEY:c21hcnQtcmVjcnVpdC1zZWNyZXQta2V5LWZvci1qd3QtdG9rZW4tc2lnbmluZy0yNTY=}
+  secret: ${JWT_SECRET_KEY}
 
 # 前端地址（用于邮件中的链接跳转）
 smart-recruit:

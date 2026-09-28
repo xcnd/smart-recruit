@@ -1,6 +1,7 @@
 package com.smartrecruit.recruitment.service.impl;
 
 import com.smartrecruit.common.dto.ApiResponse;
+import com.smartrecruit.common.exception.ValidationException;
 import com.smartrecruit.recruitment.feign.SystemFileClient;
 import com.smartrecruit.recruitment.service.FileStorageService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,7 @@ public class RemoteFileStorageServiceImpl implements FileStorageService {
     @Override
     public String upload(byte[] fileBytes, String fileName, String contentType, String relativePath) {
         if (fileBytes == null || fileBytes.length == 0) {
-            throw new IllegalArgumentException("文件不能为空");
+            throw new ValidationException("文件不能为空");
         }
 
         ApiResponse<String> response = systemFileClient.upload(
@@ -41,7 +42,9 @@ public class RemoteFileStorageServiceImpl implements FileStorageService {
 
         if (response == null || !response.ok()) {
             String errMsg = response != null ? response.message() : "未知错误";
-            throw new RuntimeException("文件上传失败: " + errMsg);
+            // 存储服务把校验失败（超限/类型不允许）作为业务错误返回，原样上抛给调用方，
+            // 不要包成 RuntimeException —— 那会被全局兜底 handler 换成通用文案。
+            throw new ValidationException("文件上传失败: " + errMsg);
         }
         log.info("通过 @HttpExchange 上传文件成功: path={}, size={}", relativePath, fileBytes.length);
         return response.data();

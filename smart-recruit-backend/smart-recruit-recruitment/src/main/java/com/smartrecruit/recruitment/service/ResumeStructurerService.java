@@ -12,8 +12,9 @@ public interface ResumeStructurerService {
     /**
      * 将简历纯文本提取为结构化信息。
      *
-     * @param rawText 从简历文件中提取的原始文本
+     * @param rawText  从简历文件中提取的原始文本
+     * @param resumeId 归属的简历 ID，用于 AI 引擎写入解析调用日志
      * @return 结构化简历数据
      */
-    ParsedResume structure(String rawText);
+    ParsedResume structure(String rawText, Long resumeId);
 }
